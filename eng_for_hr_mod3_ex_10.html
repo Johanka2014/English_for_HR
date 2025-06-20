@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive HR Worksheet</title>
+    <link rel="icon" href="https://static.wixstatic.com/media/0f55f2_b4662666c9b34fe58ed45b414b10cae3~mv2.png" type="image/png">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0fdf4; /* Light green background */
+        }
+        .page {
+            display: none;
+        }
+        .page.active {
+            display: block;
+        }
+        .nav-button {
+            transition: all 0.3s ease;
+        }
+        .nav-button.active {
+            background-color: #166534; /* Darker Green */
+            color: white;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+        }
+        .draggable {
+            touch-action: none;
+            cursor: grab;
+        }
+        .drop-target {
+            transition: background-color 0.3s ease;
+        }
+        .drop-target.drag-over {
+            background-color: #bbf7d0; /* Lighter green for hover */
+        }
+        .feedback {
+            font-weight: 600;
+        }
+        .feedback.correct {
+            color: #16a34a;
+        }
+        .feedback.incorrect {
+            color: #dc2626;
+        }
+    </style>
+</head>
+<body class="bg-green-50 text-gray-800">
+
+    <!-- Main Container -->
+    <div class="container mx-auto p-4 md:p-8 max-w-4xl">
+
+        <!-- Header Image -->
+        <header class="mb-6 md:mb-8">
+            <img src="https://static.wixstatic.com/media/0f55f2_d0ce1f16f68b4f57ab1ee7c6337b7902~mv2.jpg" alt="Header" class="w-full h-auto rounded-lg shadow-md">
+        </header>
+
+        <!-- Navigation -->
+        <nav class="flex justify-center space-x-2 md:space-x-4 mb-6 md:mb-8 bg-white p-3 rounded-full shadow-sm">
+            <button onclick="showPage('definitions')" class="nav-button active py-2 px-4 md:px-6 rounded-full text-sm md:text-base font-semibold text-green-800 bg-green-100 hover:bg-green-200" id="nav-definitions">Definitions</button>
+            <button onclick="showPage('matching')" class="nav-button py-2 px-4 md:px-6 rounded-full text-sm md:text-base font-semibold text-green-800 bg-green-100 hover:bg-green-200" id="nav-matching">Vocab Match</button>
+            <button onclick="showPage('gap-fill')" class="nav-button py-2 px-4 md:px-6 rounded-full text-sm md:text-base font-semibold text-green-800 bg-green-100 hover:bg-green-200" id="nav-gap-fill">Gap Fill</button>
+        </nav>
+
+        <!-- Content Pages -->
+        <main class="bg-white p-6 md:p-8 rounded-2xl shadow-lg">
+
+            <!-- Page 1: Definitions -->
+            <div id="definitions" class="page active">
+                <h1 class="text-2xl md:text-3xl font-bold text-green-800 mb-6">Vocabulary Definitions</h1>
+                <div class="space-y-4">
+                    <div class="p-4 bg-green-50 rounded-lg">
+                        <h2 class="font-bold text-lg text-green-900">Behaviour</h2>
+                        <p class="text-gray-700">The way in which one acts or conducts oneself, especially towards others.</p>
+                    </div>
+                    <div class="p-4 bg-green-50 rounded-lg">
+                        <h2 class="font-bold text-lg text-green-900">Breaking</h2>
+                        <p class="text-gray-700">Failing to observe a rule, law, or agreement.</p>
+                    </div>
+                    <div class="p-4 bg-green-50 rounded-lg">
+                        <h2 class="font-bold text-lg text-green-900">Conditions</h2>
+                        <p class="text-gray-700">The circumstances affecting the way in which people live or work; the terms of an agreement.</p>
+                    </div>
+                    <div class="p-4 bg-green-50 rounded-lg">
+                        <h2 class="font-bold text-lg text-green-900">Disciplinary</h2>
+                        <p class="text-gray-700">Relating to the punishment of someone who has broken rules; intended to correct or punish bad behaviour.</p>
+                    </div>
+                    <div class="p-4 bg-green-50 rounded-lg">
+                        <h2 class="font-bold text-lg text-green-900">Entitled</h2>
+                        <p class="text-gray-700">Having a right to something.</p>
+                    </div>
+                    <div class="p-4 bg-green-50 rounded-lg">
+                        <h2 class="font-bold text-lg text-green-900">Entitlement</h2>
+                        <p class="text-gray-700">The fact of having a right to something; the amount to which a person has a right.</p>
+                    </div>
+                    <div class="p-4 bg-green-50 rounded-lg">
+                        <h2 class="font-bold text-lg text-green-900">Occur</h2>
+                        <p class="text-gray-700">To happen or take place.</p>
+                    </div>
+                    <div class="p-4 bg-green-50 rounded-lg">
+                        <h2 class="font-bold text-lg text-green-900">Policy</h2>
+                        <p class="text-gray-700">A course or principle of action adopted or proposed by a business, government, or individual.</p>
+                    </div>
+                     <div class="p-4 bg-green-50 rounded-lg">
+                        <h2 class="font-bold text-lg text-green-900">Representative</h2>
+                        <p class="text-gray-700">A person chosen or appointed to act or speak for another or others, such as a union official.</p>
+                    </div>
+                    <div class="p-4 bg-green-50 rounded-lg">
+                        <h2 class="font-bold text-lg text-green-900">Safety</h2>
+                        <p class="text-gray-700">The condition of being protected from or unlikely to cause danger, risk, or injury.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Page 2: Matching Game -->
+            <div id="matching" class="page">
+                <h1 class="text-2xl md:text-3xl font-bold text-green-800 mb-2">Vocabulary Matching</h1>
+                <p class="text-gray-600 mb-6">Drag the definitions on the right to match the vocabulary words on the left.</p>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="matching-game-container">
+                    <!-- This will be populated by JavaScript -->
+                </div>
+                 <div class="mt-6 flex items-center justify-between">
+                    <button onclick="resetMatchingGame()" class="py-2 px-5 bg-yellow-500 text-white font-semibold rounded-full shadow-md hover:bg-yellow-600 focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:ring-opacity-75">Reset</button>
+                    <div id="matching-feedback" class="text-lg font-semibold"></div>
+                </div>
+            </div>
+
+            <!-- Page 3: Gap Fill -->
+            <div id="gap-fill" class="page">
+                 <h1 class="text-2xl md:text-3xl font-bold text-green-800 mb-6">Dealing with Grievances</h1>
+                 <p class="text-gray-600 mb-4">Complete the gaps with the correct words from the dropdown lists.</p>
+                 <div id="gap-fill-text" class="text-lg leading-relaxed space-y-6">
+                    <p>
+                        Problems can 
+                        <select id="gap1" class="gap-select">
+                            <!-- Options will be populated by JS -->
+                        </select> 
+                        in the best run companies for many reasons, such as over terms and 
+                        <select id="gap2" class="gap-select"></select>, 
+                        management decisions, discrimination (on grounds of race, sex, disability, and religion), sexual harassment, bullying, health, and 
+                        <select id="gap3" class="gap-select"></select> issues.
+                    </p>
+                    <p>
+                        Within two months of starting a job, employees are 
+                        <select id="gap4" class="gap-select"></select> 
+                        to a written statement setting down the main conditions of their employment. As well as information on pay, hours, holiday 
+                        <select id="gap5" class="gap-select"></select>, 
+                        and notice periods, the statement must also cover what the company will do if they have to discipline an employee for 
+                        <select id="gap6" class="gap-select"></select> 
+                        the rules (the warning procedure) and who the employee can apply to if they are dissatisfied with a 
+                        <select id="gap7" class="gap-select"></select> decision. 
+                        All employees have the right to be accompanied by another employee or a union 
+                        <select id="gap8" class="gap-select"></select> 
+                        (if applicable) at any disciplinary interview.
+                    </p>
+                    <p>
+                         A disciplinary procedure would normally be used when an employee does not follow company 
+                         <select id="gap9" class="gap-select"></select>, 
+                         breaks rules, or displays inappropriate workplace behaviour. Employees must be fully informed of their inappropriate 
+                         <select id="gap10" class="gap-select"></select> 
+                         and given an opportunity to explain themselves. The procedure should be handled in a private and respectful manner and the employee's previous record should be taken into account.
+                    </p>
+                 </div>
+                 <div class="mt-8">
+                    <button onclick="checkAnswers()" class="py-2 px-6 bg-green-600 text-white font-semibold rounded-full shadow-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-75">Check Answers</button>
+                    <div id="gap-fill-feedback" class="mt-4 text-lg"></div>
+                 </div>
+            </div>
+
+        </main>
+    </div>
+
+    <script>
+        const pages = ['definitions', 'matching', 'gap-fill'];
+
+        function showPage(pageId) {
+            // Hide all pages
+            document.querySelectorAll('.page').forEach(page => {
+                page.classList.remove('active');
+            });
+            // Show the selected page
+            document.getElementById(pageId).classList.add('active');
+
+            // Update nav button styles
+            document.querySelectorAll('.nav-button').forEach(button => {
+                button.classList.remove('active');
+            });
+            document.getElementById('nav-' + pageId).classList.add('active');
+        }
+
+        // --- VOCABULARY DATA ---
+        const vocab = [
+            { term: 'Occur', definition: 'To happen or take place.' },
+            { term: 'Conditions', definition: 'The circumstances affecting the way in which people live or work; the terms of an agreement.' },
+            { term: 'Safety', definition: 'The condition of being protected from or unlikely to cause danger, risk, or injury.' },
+            { term: 'Entitled', definition: 'Having a right to something.' },
+            { term: 'Entitlement', definition: 'The fact of having a right to something; the amount to which a person has a right.' },
+            { term: 'Breaking', definition: 'Failing to observe a rule, law, or agreement.' },
+            { term: 'Disciplinary', definition: 'Relating to the punishment of someone who has broken rules; intended to correct or punish bad behaviour.' },
+            { term: 'Representative', definition: 'A person chosen or appointed to act or speak for another or others, such as a union official.' },
+            { term: 'Policy', definition: 'A course or principle of action adopted or proposed by a business, government, or individual.' },
+            { term: 'Behaviour', definition: 'The way in which one acts or conducts oneself, especially towards others.' },
+        ];
+        
+        const allWords = vocab.map(v => v.term);
+
+        // --- MATCHING GAME LOGIC ---
+        let draggedItem = null;
+
+        function shuffle(array) {
+            let currentIndex = array.length, randomIndex;
+            while (currentIndex != 0) {
+                randomIndex = Math.floor(Math.random() * currentIndex);
+                currentIndex--;
+                [array[currentIndex], array[randomIndex]] = [array[randomIndex], array[currentIndex]];
+            }
+            return array;
+        }
+
+        function setupMatchingGame() {
+            const container = document.getElementById('matching-game-container');
+            container.innerHTML = '';
+            document.getElementById('matching-feedback').innerHTML = '';
+
+            const shuffledVocab = shuffle([...vocab]);
+            const terms = shuffledVocab.map(v => v.term);
+            const definitions = shuffle(shuffledVocab.map(v => ({ term: v.term, text: v.definition })));
+
+            const termsColumn = document.createElement('div');
+            termsColumn.className = 'space-y-3';
+            termsColumn.innerHTML = '<h3 class="text-lg font-semibold text-green-800 border-b-2 border-green-200 pb-2">Vocabulary</h3>';
+            
+            const defsColumn = document.createElement('div');
+            defsColumn.className = 'space-y-3';
+            defsColumn.innerHTML = '<h3 class="text-lg font-semibold text-green-800 border-b-2 border-green-200 pb-2">Definitions</h3>';
+
+            terms.forEach(term => {
+                const termEl = document.createElement('div');
+                termEl.className = 'p-3 bg-green-100 rounded-lg drop-target';
+                termEl.dataset.term = term;
+                termEl.textContent = term;
+                
+                termEl.addEventListener('dragover', e => {
+                    e.preventDefault();
+                    termEl.classList.add('drag-over');
+                });
+                termEl.addEventListener('dragleave', () => termEl.classList.remove('drag-over'));
+                termEl.addEventListener('drop', e => {
+                    e.preventDefault();
+                    termEl.classList.remove('drag-over');
+                    if (draggedItem) {
+                        const originalParent = draggedItem.parentElement;
+                        termEl.appendChild(draggedItem);
+                        checkMatch();
+                    }
+                });
+                termsColumn.appendChild(termEl);
+            });
+
+            definitions.forEach(def => {
+                const defEl = document.createElement('div');
+                defEl.className = 'p-3 bg-blue-100 rounded-lg draggable';
+                defEl.textContent = def.text;
+                defEl.dataset.term = def.term;
+                defEl.draggable = true;
+
+                defEl.addEventListener('dragstart', e => {
+                    draggedItem = e.target;
+                    setTimeout(() => e.target.style.opacity = '0.5', 0);
+                });
+                defEl.addEventListener('dragend', e => {
+                    draggedItem = null;
+                    setTimeout(() => e.target.style.opacity = '1', 0);
+                });
+                defsColumn.appendChild(defEl);
+            });
+
+            container.appendChild(termsColumn);
+            container.appendChild(defsColumn);
+        }
+        
+        function resetMatchingGame() {
+            setupMatchingGame();
+        }
+
+        function checkMatch() {
+            const targets = document.querySelectorAll('.drop-target');
+            let allCorrect = true;
+            let filledCount = 0;
+            
+            targets.forEach(target => {
+                if(target.children.length > 0) {
+                    filledCount++;
+                    const droppedDef = target.children[0];
+                    if (target.dataset.term === droppedDef.dataset.term) {
+                        target.style.backgroundColor = '#dcfce7'; // correct green
+                        droppedDef.style.backgroundColor = '#dcfce7';
+                    } else {
+                        target.style.backgroundColor = '#fee2e2'; // incorrect red
+                        droppedDef.style.backgroundColor = '#fee2e2';
+                        allCorrect = false;
+                    }
+                } else {
+                    allCorrect = false; // Not all targets are filled
+                }
+            });
+
+            const feedbackEl = document.getElementById('matching-feedback');
+            if (filledCount === vocab.length) {
+                 if (allCorrect) {
+                    feedbackEl.textContent = 'Excellent! All correct!';
+                    feedbackEl.className = 'feedback correct';
+                } else {
+                    feedbackEl.textContent = 'Some are incorrect. Try again!';
+                    feedbackEl.className = 'feedback incorrect';
+                }
+            } else {
+                feedbackEl.textContent = '';
+            }
+        }
+
+
+        // --- GAP FILL LOGIC ---
+        const answers = {
+            gap1: 'occur',
+            gap2: 'conditions',
+            gap3: 'safety',
+            gap4: 'entitled',
+            gap5: 'entitlement',
+            gap6: 'breaking',
+            gap7: 'disciplinary',
+            gap8: 'representative',
+            gap9: 'policy',
+            gap10: 'behaviour',
+        };
+
+        function populateGapFill() {
+            const selects = document.querySelectorAll('.gap-select');
+            const shuffledWords = shuffle([...allWords]);
+            selects.forEach(select => {
+                select.innerHTML = '<option value="">Select a word...</option>';
+                shuffledWords.forEach(word => {
+                    const option = document.createElement('option');
+                    option.value = word.toLowerCase();
+                    option.textContent = word;
+                    select.appendChild(option);
+                });
+                select.className = 'p-1 border-2 border-gray-300 rounded-md focus:border-green-500 focus:ring focus:ring-green-200 focus:ring-opacity-50';
+            });
+        }
+        
+        function checkAnswers() {
+            let correctCount = 0;
+            const feedbackEl = document.getElementById('gap-fill-feedback');
+            
+            for (const gapId in answers) {
+                const select = document.getElementById(gapId);
+                const correctAnswer = answers[gapId];
+                if (select.value === correctAnswer) {
+                    select.classList.remove('border-red-500');
+                    select.classList.add('border-green-500');
+                    correctCount++;
+                } else {
+                    select.classList.remove('border-green-500');
+                    select.classList.add('border-red-500');
+                }
+            }
+            
+            if (correctCount === Object.keys(answers).length) {
+                feedbackEl.textContent = "Perfect! You've filled all the gaps correctly.";
+                feedbackEl.className = 'feedback correct';
+            } else {
+                feedbackEl.textContent = `You have ${correctCount} out of ${Object.keys(answers).length} correct. Keep trying!`;
+                feedbackEl.className = 'feedback incorrect';
+            }
+        }
+
+        // --- INITIALIZATION ---
+        window.onload = () => {
+            showPage('definitions');
+            setupMatchingGame();
+            populateGapFill();
+        };
+
+    </script>
+</body>
+</html>
