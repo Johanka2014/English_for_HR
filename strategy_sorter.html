@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Interview Strategy Sorter</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        /* Style for the list items to allow smooth transitions */
+        #draggable-list li {
+            transition: transform 0.2s ease-in-out;
+        }
+        .draggable {
+            cursor: move;
+            user-select: none;
+            transition: background-color 0.2s ease;
+        }
+        /* Style for the item being actively dragged */
+        .dragging {
+            opacity: 0.5;
+            transform: scale(1.05);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        /* Highlight potential drop zones */
+        .drag-over {
+            background-color: rgba(34, 197, 94, 0.1);
+        }
+        /* Feedback styles for checking the order */
+        .feedback-correct {
+            border-left-color: #22c55e !important;
+            background-color: #f0fdf4;
+        }
+        .feedback-incorrect {
+            border-left-color: #ef4444 !important;
+            background-color: #fef2f2;
+        }
+    </style>
+</head>
+<body class="bg-slate-100 flex items-center justify-center min-h-screen p-4">
+
+    <div class="bg-white rounded-xl shadow-lg w-full max-w-2xl mx-auto p-6 md:p-8">
+        
+        <!-- Header -->
+        <div class="text-center mb-6">
+            <h1 class="text-2xl md:text-3xl font-bold text-slate-800">Interview Strategy Sorter</h1>
+            <p class="text-slate-500 mt-2">Drag and drop the steps into the correct logical order for conducting an effective interview.</p>
+        </div>
+
+        <!-- Draggable List -->
+        <ul id="draggable-list" class="space-y-3 mb-6">
+            <!-- Items will be inserted here by JavaScript -->
+        </ul>
+
+        <!-- Action Buttons & Feedback -->
+        <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div id="feedback-message" class="text-center sm:text-left text-slate-600 font-medium h-6"></div>
+            <div class="flex gap-3">
+                <button id="reset-button" class="px-5 py-2.5 rounded-lg bg-slate-200 text-slate-700 font-semibold hover:bg-slate-300 transition-colors duration-200">Reset</button>
+                <button id="check-button" class="px-5 py-2.5 rounded-lg bg-blue-600 text-white font-semibold hover:bg-blue-700 transition-colors duration-200 shadow-sm">Check Order</button>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const draggableList = document.getElementById('draggable-list');
+            const checkButton = document.getElementById('check-button');
+            const resetButton = document.getElementById('reset-button');
+            const feedbackMessage = document.getElementById('feedback-message');
+
+            const interviewStrategies = [
+                'Use a quiet office away from noise and interruptions.',
+                "Read the candidate's application and have it with you at the interview.",
+                'Welcome the applicant warmly, introduce yourself, and explain the structure of the interview clearly.',
+                'Establish rapport and relax the candidate.',
+                'Use open questions as much as possible to ensure the candidate gives detailed answers.',
+                'Allow the candidate to do most of the talking but keep the interview focussed.',
+                'Allow the candidate time for his or her own questions.',
+                'Before finishing the interview, explain what will happen next and by when.'
+            ];
+
+            const correctOrder = [
+                "Read the candidate's application and have it with you at the interview.",
+                'Use a quiet office away from noise and interruptions.',
+                'Welcome the applicant warmly, introduce yourself, and explain the structure of the interview clearly.',
+                'Establish rapport and relax the candidate.',
+                'Use open questions as much as possible to ensure the candidate gives detailed answers.',
+                'Allow the candidate to do most of the talking but keep the interview focussed.',
+                'Allow the candidate time for his or her own questions.',
+                'Before finishing the interview, explain what will happen next and by when.'
+            ];
+            
+            let dragStartIndex;
+
+            // Function to create and display the list items
+            function createList() {
+                [...interviewStrategies]
+                    .map(a => ({ value: a, sort: Math.random() }))
+                    .sort((a, b) => a.sort - b.sort)
+                    .map(a => a.value)
+                    .forEach((strategy, index) => {
+                        const listItem = document.createElement('li');
+                        // We no longer need data-index, we'll get index dynamically
+                        listItem.innerHTML = `
+                            <div draggable="true" class="draggable flex items-center gap-4 p-4 bg-white border border-slate-200 rounded-lg shadow-sm hover:border-blue-500">
+                                <span class="list-number text-blue-500 font-bold text-xl">${index + 1}</span>
+                                <p class="text-slate-700">${strategy}</p>
+                            </div>
+                        `;
+                        draggableList.appendChild(listItem);
+                    });
+                
+                addEventListeners();
+            }
+
+            // Drag and drop event listeners
+            function dragStart() {
+                // Get the index of the LI element being dragged
+                dragStartIndex = Array.from(this.closest('li').parentElement.children).indexOf(this.closest('li'));
+                // Use a timeout to avoid glitching when the 'dragging' class is added
+                setTimeout(() => this.classList.add('dragging'), 0);
+            }
+
+            function dragEnter() {
+                // Add a visual indicator on the drop target
+                this.classList.add('drag-over');
+            }
+
+            function dragLeave() {
+                this.classList.remove('drag-over');
+            }
+
+            function dragOver(e) {
+                e.preventDefault(); // This is necessary to allow dropping
+            }
+
+            function dragDrop() {
+                // Get the index of the LI element being dropped on
+                const dragEndIndex = Array.from(this.closest('li').parentElement.children).indexOf(this.closest('li'));
+                swapItems(dragStartIndex, dragEndIndex);
+                this.classList.remove('drag-over');
+            }
+            
+            function dragEnd() {
+                this.classList.remove('dragging');
+            }
+            
+            // Animate and swap list items in the DOM
+            function swapItems(fromIndex, toIndex) {
+                if (fromIndex === toIndex) return; // No need to swap with itself
+
+                const items = [...draggableList.children];
+                const fromNode = items[fromIndex];
+                const toNode = items[toIndex];
+
+                const fromRect = fromNode.getBoundingClientRect();
+                const toRect = toNode.getBoundingClientRect();
+
+                // Apply transforms to animate the movement
+                fromNode.style.transform = `translateY(${toRect.top - fromRect.top}px)`;
+                toNode.style.transform = `translateY(${fromRect.top - toRect.top}px)`;
+                
+                // Use 'transitionend' event to perform DOM swap after animation
+                fromNode.addEventListener('transitionend', function handler() {
+                    // Remove this event listener to prevent it from firing again
+                    this.removeEventListener('transitionend', handler);
+
+                    // Reset transforms and transitions to prevent flickering
+                    fromNode.style.transform = '';
+                    toNode.style.transform = '';
+                    fromNode.style.transition = 'none';
+                    toNode.style.transition = 'none';
+
+                    // Actual DOM swap
+                    if (fromIndex < toIndex) {
+                        toNode.parentNode.insertBefore(fromNode, toNode.nextSibling);
+                    } else {
+                        toNode.parentNode.insertBefore(fromNode, toNode);
+                    }
+
+                    // Restore transitions for future drags after a browser frame update
+                    requestAnimationFrame(() => {
+                        fromNode.style.transition = ''; // Resets to stylesheet rule
+                        toNode.style.transition = '';
+                    });
+                    
+                    updateNumbering();
+                }, { once: true });
+            }
+
+            // Update the visible numbers on the list items
+            function updateNumbering() {
+                const listNumbers = draggableList.querySelectorAll('.list-number');
+                listNumbers.forEach((numberEl, index) => {
+                    numberEl.textContent = index + 1;
+                });
+            }
+
+            // Add event listeners to all draggable items
+            function addEventListeners() {
+                const draggables = document.querySelectorAll('.draggable');
+                const dragListItems = document.querySelectorAll('#draggable-list li');
+
+                draggables.forEach(draggable => {
+                    draggable.addEventListener('dragstart', dragStart);
+                    draggable.addEventListener('dragend', dragEnd);
+                });
+
+                dragListItems.forEach(item => {
+                    item.addEventListener('dragover', dragOver);
+                    item.addEventListener('drop', dragDrop);
+                    item.addEventListener('dragenter', dragEnter);
+                    item.addEventListener('dragleave', dragLeave);
+                });
+            }
+            
+            // Remove all feedback coloring
+            function clearFeedback() {
+                 const listItems = draggableList.querySelectorAll('.draggable');
+                 listItems.forEach(item => {
+                    item.classList.remove('feedback-correct', 'feedback-incorrect');
+                    item.style.borderLeftWidth = '';
+                 });
+                 feedbackMessage.textContent = '';
+            }
+
+            // Check the list against the correct order
+            function checkOrder() {
+                clearFeedback();
+                let allCorrect = true;
+                
+                const listItems = draggableList.querySelectorAll('.draggable');
+                listItems.forEach((item, index) => {
+                    const strategyText = item.querySelector('p').textContent.trim();
+                    item.style.borderLeftWidth = '4px';
+
+                    if (strategyText === correctOrder[index]) {
+                        item.classList.add('feedback-correct');
+                    } else {
+                        item.classList.add('feedback-incorrect');
+                        allCorrect = false;
+                    }
+                });
+
+                if (allCorrect) {
+                    feedbackMessage.textContent = "Great job! That's a logical order.";
+                    feedbackMessage.style.color = '#16a34a';
+                } else {
+                    feedbackMessage.textContent = "Not quite. Try rearranging the red items.";
+                    feedbackMessage.style.color = '#dc2626';
+                }
+            }
+            
+            // Reset the list to its original shuffled state
+            function resetList() {
+                clearFeedback();
+                draggableList.innerHTML = '';
+                createList();
+            }
+
+            checkButton.addEventListener('click', checkOrder);
+            resetButton.addEventListener('click', resetList);
+
+            // Initial setup
+            createList();
+        });
+    </script>
+
+</body>
+</html>
