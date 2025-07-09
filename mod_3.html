@@ -225,7 +225,7 @@
         <div id="activity-2" class="activity-card hidden">
             <h2 class="text-2xl font-bold mb-4 text-gray-700">Activity 3: Listening Comprehension (True/False)</h2>
             <p class="mb-6 text-gray-600">Listen to the conversation and decide whether the following statements are true or false.</p>
-            <audio controls src="https://docs.google.com/uc?export=download&id=13ec5yl3s-oEy2kc68tP_V018AcOH7KAZ">
+            <audio controls src="https://johanka2014.github.io/English_for_HR/09.mp3">
                 Your browser does not support the audio element.
             </audio>
             <div id="listening-quiz-container" class="space-y-5 mt-6"></div>
@@ -251,8 +251,8 @@
         <!-- Activity 4: Listening Activity (Fill-in) -->
         <div id="activity-4" class="activity-card hidden">
             <h2 class="text-2xl font-bold mb-4 text-gray-700">Activity 5: Listening Comprehension (Fill-in)</h2>
-            <p class="mb-6 text-gray-600">Listen to the conversation again and complete the sentences below.</p>
-            <audio controls src="https://docs.google.com/uc?export=download&id=13ec5yl3s-oEy2kc68tP_V018AcOH7KAZ">
+            <p class="mb-6 text-gray-600">Listen to the extract again and fill in the missing words in each sentence.</p>
+            <audio controls src="https://johanka2014.github.io/English_for_HR/09.mp3">
                 Your browser does not support the audio element.
             </audio>
             <div id="listening-fill-container" class="space-y-5 mt-6"></div>
@@ -502,9 +502,9 @@
 
         // --- Activity 2: Listening Quiz (T/F) ---
         const listeningQuizData = [
-            { statement: "Marion will be working flexitime in her new job.", answer: true },
-            { statement: "She will be paid for the first 12 weeks if she is ill.", answer: false },
-            { statement: "Her holiday entitlement is 20 days from the date she starts with Business Systems.", answer: false },
+            { statement: "Marion will be working flexitime in her new job.", answer: false },
+            { statement: "She will be paid for the first 12 weeks if she is ill.", answer: true },
+            { statement: "Her holiday entitlement is 20 days from the date she starts with Business Systems.", answer: true },
             { statement: "She sent in copies of her references with her application.", answer: true },
             { statement: "She hasn't told her employer in Marseille she's leaving yet.", answer: false },
             { statement: "She will receive the offer letter in two weeks.", answer: false }
@@ -560,23 +560,24 @@
         
         // --- Activity 4: Listening Fill-in ---
         const listeningFillData = [
-            { sentence: "Your basic salary will be £<input type='text' id='fill-0' class='w-24'> per annum.", answer: "25,000" },
-            { sentence: "The company pension scheme is <input type='text' id='fill-1' class='w-24'>.", answer: "contributory" },
-            { sentence: "Your normal hours of work are <input type='text' id='fill-2' class='w-24'> a week.", answer: "35" },
-            { sentence: "You are entitled to <input type='text' id='fill-3' class='w-24'> days' holiday.", answer: "25" },
-            { sentence: "We need to have your signed <input type='text' id='fill-4' class='w-24'> and two <input type='text' id='fill-5' class='w-24'>.", answer: ["contract", "references"] }
+            { sentence: "We currently o{} a 40-hour week (plus lunches).", answers: ["perate"] },
+            { sentence: "... there may be o{} during busy periods.", answers: ["vertime"] },
+            { sentence: "This is either paid or given as t{} o{} in lieu.", answers: ["ime", "ff"] },
+            { sentence: "Your paid a{} holiday is 20 days.", answers: ["nnual"] },
+            { sentence: "We'll be t{} up references with your previous and present employer.", answers: ["aking"] },
+            { sentence: "We'll make the offer of employment 's{} to satisfactory reference'.", answers: ["ubject"] }
         ];
 
         function initListeningFill() {
             const container = document.getElementById('listening-fill-container');
             container.innerHTML = '';
+            let inputCounter = 0;
             listeningFillData.forEach((item, index) => {
                 let sentenceHtml = item.sentence;
-                if (Array.isArray(item.answer)) {
-                    sentenceHtml = item.sentence.replace("<input type='text'", `<input type='text' id='fill-${index}'`).replace("<input type='text'", `<input type='text' id='fill-${index+1}'`);
-                } else {
-                    sentenceHtml = item.sentence.replace("<input type='text'", `<input type='text' id='fill-${index}'`);
-                }
+                item.answers.forEach(() => {
+                    sentenceHtml = sentenceHtml.replace('{}', `<input type='text' id='fill-input-${inputCounter}' class='w-24 mx-1 border-b-2 focus:border-blue-500 outline-none rounded-sm px-1'>`);
+                    inputCounter++;
+                });
                 container.innerHTML += `
                     <div class="p-3 bg-gray-50 rounded-lg">
                         <p>${index + 1}. ${sentenceHtml}</p>
@@ -586,30 +587,21 @@
         }
 
         function checkListeningFill() {
-            let fillIndex = 0;
-            listeningFillData.forEach((item) => {
-                if (Array.isArray(item.answer)) {
-                    const input1 = document.getElementById(`fill-${fillIndex}`);
-                    const input2 = document.getElementById(`fill-${fillIndex + 1}`);
-                    if(input1.value.trim().toLowerCase() === item.answer[0] && input2.value.trim().toLowerCase() === item.answer[1]){
-                       input1.style.borderColor = '#38a169';
-                       input2.style.borderColor = '#38a169';
-                    } else {
-                       input1.style.borderColor = '#c53030';
-                       input2.style.borderColor = '#c53030';
+            let inputCounter = 0;
+            listeningFillData.forEach(item => {
+                item.answers.forEach(answer => {
+                    const inputEl = document.getElementById(`fill-input-${inputCounter}`);
+                    if(inputEl) {
+                        if (inputEl.value.trim().toLowerCase() === answer.toLowerCase()) {
+                            inputEl.style.borderColor = '#38a169';
+                            inputEl.style.backgroundColor = '#c6f6d5';
+                        } else {
+                            inputEl.style.borderColor = '#c53030';
+                            inputEl.style.backgroundColor = '#fed7d7';
+                        }
                     }
-                    fillIndex += 2;
-                } else {
-                    const inputEl = document.getElementById(`fill-${fillIndex}`);
-                    if (inputEl.value.trim().toLowerCase() === item.answer) {
-                        inputEl.style.borderColor = '#38a169';
-                        inputEl.style.backgroundColor = '#c6f6d5';
-                    } else {
-                        inputEl.style.borderColor = '#c53030';
-                        inputEl.style.backgroundColor = '#fed7d7';
-                    }
-                    fillIndex++;
-                }
+                    inputCounter++;
+                });
             });
         }
 
@@ -880,7 +872,7 @@
             initMatchingGame();
         }
 
-        // --- Activity 7: True or False ---
+        // --- Activity 6: True or False ---
         const trueFalseData = [
             { statement: "Melanie has applied for a position as Call Centre Assistant.", answer: false, explanation: "She applied for a Team Leader position." },
             { statement: "She sent a CV with her letter of application.", answer: true, explanation: "" },
@@ -939,7 +931,7 @@
             });
         }
 
-        // --- Activity 8: Fill the Gaps ---
+        // --- Activity 7: Fill the Gaps ---
         const fillGapsData = [
             { sentence: "My best marketing assistant has ______. She's got herself another job with more money!", answer: "resigned" },
             { sentence: "Will we be able to ______ a replacement when John hands in his resignation?", answer: "take on" },
@@ -989,13 +981,13 @@
         window.onload = () => {
             initPartnerships();
             initListeningActivity();
-            initListeningFill();
-            initMatchingGame();
             initSentenceMatching();
             initCrossword();
+            initMatchingGame();
             initTrueFalse();
             initFillGaps();
         };
     </script>
 </body>
 </html>
+
