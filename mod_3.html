@@ -1,0 +1,1001 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Employee Relations - Interactive Activities</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Lora:wght@700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #dbeafe 100%);
+        }
+        .activity-card {
+            background: white;
+            border-radius: 1rem;
+            padding: 2rem;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s ease;
+        }
+        .activity-card:hover {
+            transform: translateY(-5px);
+        }
+        .btn-primary {
+            background: linear-gradient(to right, #6a11cb 0%, #2575fc 100%);
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+        }
+        .btn-primary:hover {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            transform: translateY(-2px);
+        }
+        .btn-start {
+            padding: 1rem 2.5rem;
+            font-size: 1.25rem;
+            border-radius: 50px;
+            background: linear-gradient(to right, #3b82f6, #60a5fa);
+            color: white;
+            font-weight: bold;
+            box-shadow: 0 5px 15px rgba(59, 130, 246, 0.4);
+            transition: all 0.3s ease;
+        }
+        .btn-start:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(59, 130, 246, 0.5);
+        }
+        .nav-link {
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .nav-link.active {
+            background: linear-gradient(to right, #6a11cb 0%, #2575fc 100%);
+            color: white;
+        }
+        .nav-link:not(.active) {
+            color: #4a5568;
+        }
+        .nav-link:not(.active):hover {
+            background-color: rgba(0,0,0,0.05);
+        }
+        .matching-item, .partnership-item, .definition-item, .sentence-half {
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: all 0.2s ease-in-out;
+        }
+        .matching-item.selected, .partnership-item.selected, .definition-item.selected, .sentence-half.selected {
+            border-color: #6a11cb;
+            background-color: #f3e8ff;
+        }
+        .matching-item.correct, .partnership-item.correct, .definition-item.correct, .sentence-half.correct {
+            background-color: #c6f6d5 !important;
+            border-color: #38a169 !important;
+            cursor: default;
+        }
+        .matching-item.incorrect, .partnership-item.incorrect, .definition-item.incorrect, .sentence-half.incorrect {
+            background-color: #fed7d7 !important;
+            border-color: #c53030 !important;
+        }
+        .feedback {
+            margin-top: 1rem;
+            font-weight: 600;
+        }
+        .feedback.correct {
+            color: #2f855a;
+        }
+        .feedback.incorrect {
+            color: #c53030;
+        }
+        input[type="text"] {
+            border-radius: 0.5rem;
+            border: 1px solid #cbd5e0;
+            padding: 0.5rem 0.75rem;
+            width: 150px;
+            transition: border-color 0.2s;
+        }
+        input[type="text"]:focus {
+            outline: none;
+            border-color: #6a11cb;
+        }
+        .gapped-input {
+            width: 3ch;
+            text-align: center;
+            border: none;
+            border-bottom: 2px solid #cbd5e0;
+            border-radius: 0;
+            margin: 0 1px;
+            font-weight: bold;
+            color: #6a11cb;
+        }
+        .gapped-input:focus {
+            border-color: #6a11cb;
+            outline: none;
+        }
+        audio {
+            width: 100%;
+            margin-top: 1rem;
+        }
+        /* Crossword Styles */
+        .crossword-grid {
+            display: grid;
+            grid-template-columns: repeat(11, 35px);
+            grid-template-rows: repeat(10, 35px);
+            gap: 2px;
+            margin: 2rem auto;
+            justify-content: center;
+        }
+        .crossword-cell {
+            width: 35px;
+            height: 35px;
+            border: 1px solid #ccc;
+            text-align: center;
+            font-size: 1.2rem;
+            text-transform: uppercase;
+            background-color: white;
+        }
+        .crossword-cell:focus {
+            outline: 2px solid #6a11cb;
+        }
+        .crossword-cell.empty {
+            background-color: transparent;
+            border: none;
+        }
+        .crossword-cell-container {
+            position: relative;
+        }
+        .clue-number {
+            position: absolute;
+            top: 1px;
+            left: 2px;
+            font-size: 0.7rem;
+            font-weight: bold;
+            color: #4a5568;
+        }
+    </style>
+</head>
+<body class="text-gray-800">
+
+    <!-- Front Page Section -->
+    <div id="activity-home" class="container mx-auto text-center p-8 flex flex-col items-center justify-center min-h-screen">
+        <div class="w-full max-w-3xl bg-white p-6 rounded-2xl shadow-2xl">
+            <img src="https://johanka2014.github.io/englishunpacked/employee_relations.png" alt="Employee Relations in London" class="w-full h-auto rounded-xl object-cover">
+        </div>
+        <button class="btn-start mt-10" onclick="startActivities()">Click to Start Activities</button>
+    </div>
+
+    <!-- Navigation for activities -->
+    <nav id="activity-nav" class="container mx-auto mt-12 mb-8 p-4 justify-center flex-wrap gap-2 md:gap-4 bg-white/50 backdrop-blur-sm rounded-xl shadow-md w-max hidden">
+        <a id="nav-0" class="nav-link active" onclick="showActivity(0)">1. Word Partnerships</a>
+        <a id="nav-1" class="nav-link" onclick="showActivity(1)">2. Key Vocabulary</a>
+        <a id="nav-2" class="nav-link" onclick="showActivity(2)">3. Listening (T/F)</a>
+        <a id="nav-3" class="nav-link" onclick="showActivity(3)">4. Sentence Matching</a>
+        <a id="nav-4" class="nav-link" onclick="showActivity(4)">5. Listening (Fill-in)</a>
+        <a id="nav-5" class="nav-link" onclick="showActivity(5)">6. Crossword</a>
+        <a id="nav-6" class="nav-link" onclick="showActivity(6)">7. Vocabulary Match</a>
+        <a id="nav-7" class="nav-link" onclick="showActivity(7)">8. True or False</a>
+        <a id="nav-8" class="nav-link" onclick="showActivity(8)">9. Fill the Gaps</a>
+    </nav>
+
+    <main id="main-content" class="container mx-auto px-4 sm:px-6 lg:px-8 hidden">
+
+        <!-- Activity 0: Word Partnerships -->
+        <div id="activity-0" class="activity-card">
+            <h2 class="text-2xl font-bold mb-4 text-gray-700">Activity 1: Word Partnerships</h2>
+            <p class="mb-6 text-gray-600">Here are some word partnerships that apply to employee relations. Some of the letters are missing. Complete the words and then match them with the definitions on the right.</p>
+            <div id="partnership-feedback" class="feedback mb-4 text-center"></div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div id="partnerships-container" class="space-y-3"></div>
+                <div id="partnership-definitions-container" class="space-y-3"></div>
+            </div>
+             <div class="text-center mt-6">
+                <button class="btn-primary" onclick="resetPartnerships()">Reset Game</button>
+            </div>
+        </div>
+
+        <!-- Activity 1: Key Vocabulary -->
+        <div id="activity-1" class="activity-card hidden">
+            <h2 class="text-2xl font-bold mb-4 text-gray-700">Activity 2: Key Vocabulary</h2>
+            <p class="mb-6 text-gray-600">Review the key vocabulary from this unit.</p>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+                <div>
+                    <img src="https://johanka2014.github.io/englishunpacked/Newspaper_Headlines.png" alt="Newspaper Headlines" class="w-full h-auto rounded-xl object-contain shadow-lg">
+                </div>
+                <div class="text-lg space-y-3 font-semibold text-gray-700">
+                    <p class="p-3 bg-blue-50 rounded-lg">sex discrimination</p>
+                    <p class="p-3 bg-blue-50 rounded-lg">conflict of employment</p>
+                    <p class="p-3 bg-blue-50 rounded-lg">equal pay</p>
+                    <p class="p-3 bg-blue-50 rounded-lg">parental leave</p>
+                    <p class="p-3 bg-blue-50 rounded-lg">workplace injuries</p>
+                    <p class="p-3 bg-blue-50 rounded-lg">short-term working</p>
+                    <p class="p-3 bg-blue-50 rounded-lg">disciplinary and grievance procedure</p>
+                    <p class="p-3 bg-blue-50 rounded-lg">work-related stress</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Activity 2: Listening Activity (T/F) -->
+        <div id="activity-2" class="activity-card hidden">
+            <h2 class="text-2xl font-bold mb-4 text-gray-700">Activity 3: Listening Comprehension (True/False)</h2>
+            <p class="mb-6 text-gray-600">Listen to the conversation and decide whether the following statements are true or false.</p>
+            <audio controls src="https://docs.google.com/uc?export=download&id=13ec5yl3s-oEy2kc68tP_V018AcOH7KAZ">
+                Your browser does not support the audio element.
+            </audio>
+            <div id="listening-quiz-container" class="space-y-5 mt-6"></div>
+            <div class="text-center mt-8">
+                <button class="btn-primary" onclick="checkListeningAnswers()">Check Answers</button>
+            </div>
+        </div>
+        
+        <!-- Activity 3: Sentence Matching -->
+        <div id="activity-3" class="activity-card hidden">
+            <h2 class="text-2xl font-bold mb-4 text-gray-700">Activity 4: Sentence Matching</h2>
+            <p class="mb-6 text-gray-600">Complete the sentences by matching the two halves.</p>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div id="sentence-starts-container" class="space-y-3"></div>
+                <div id="sentence-ends-container" class="space-y-3"></div>
+            </div>
+            <div id="sentence-matching-feedback" class="feedback mt-6 text-center"></div>
+            <div class="text-center mt-6">
+                <button class="btn-primary" onclick="resetSentenceMatching()">Reset Game</button>
+            </div>
+        </div>
+
+        <!-- Activity 4: Listening Activity (Fill-in) -->
+        <div id="activity-4" class="activity-card hidden">
+            <h2 class="text-2xl font-bold mb-4 text-gray-700">Activity 5: Listening Comprehension (Fill-in)</h2>
+            <p class="mb-6 text-gray-600">Listen to the conversation again and complete the sentences below.</p>
+            <audio controls src="https://docs.google.com/uc?export=download&id=13ec5yl3s-oEy2kc68tP_V018AcOH7KAZ">
+                Your browser does not support the audio element.
+            </audio>
+            <div id="listening-fill-container" class="space-y-5 mt-6"></div>
+            <div class="text-center mt-8">
+                <button class="btn-primary" onclick="checkListeningFill()">Check Answers</button>
+            </div>
+        </div>
+        
+        <!-- Activity 5: Crossword -->
+        <div id="activity-5" class="activity-card hidden">
+            <h2 class="text-2xl font-bold mb-4 text-gray-700">Activity 6: Crossword</h2>
+            <p class="mb-6 text-gray-600">Complete the puzzle with words from the listening exercise.</p>
+            <div class="flex flex-col md:flex-row gap-8 justify-center">
+                <div id="crossword-container"></div>
+                <div>
+                    <h3 class="text-xl font-bold mb-2">Across</h3>
+                    <ul class="list-disc list-inside space-y-1">
+                        <li><b>6.</b> the opposite of temporary (9)</li>
+                        <li><b>7.</b> ways of doing things (9)</li>
+                        <li><b>8.</b> instead (of sth else) (7)</li>
+                        <li><b>9.</b> to get official permission: to ... sth with sb (5)</li>
+                    </ul>
+                    <h3 class="text-xl font-bold mt-6 mb-2">Down</h3>
+                    <ul class="list-disc list-inside space-y-1">
+                        <li><b>1.</b> people who supply the information in 5 down (8)</li>
+                        <li><b>2.</b> to agree to sth, to keep a promise (7)</li>
+                        <li><b>3.</b> an official written agreement (8)</li>
+                        <li><b>4.</b> letter containing all terms and conditions: ... letter (5)</li>
+                        <li><b>5.</b> information about how well you worked in your previous job(s) (9)</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="text-center mt-8">
+                <button class="btn-primary" onclick="checkCrossword()">Check Answers</button>
+            </div>
+        </div>
+
+        <!-- Activity 6: Vocabulary Match -->
+        <div id="activity-6" class="activity-card hidden">
+            <h2 class="text-2xl font-bold mb-4 text-gray-700">Activity 7: Vocabulary Match</h2>
+            <p class="mb-6 text-gray-600">Match the phrases on the left with their correct definitions on the right. Click a phrase, then click its matching definition.</p>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div id="phrases-container" class="space-y-3"></div>
+                <div id="definitions-container" class="space-y-3"></div>
+            </div>
+            <div id="matching-feedback" class="feedback mt-6 text-center"></div>
+            <div class="text-center mt-6">
+                <button class="btn-primary" onclick="resetMatching()">Reset Game</button>
+            </div>
+        </div>
+
+        <!-- Activity 7: True or False -->
+        <div id="activity-7" class="activity-card hidden">
+            <h2 class="text-2xl font-bold mb-4 text-gray-700">Activity 8: True or False?</h2>
+            <p class="mb-6 text-gray-600">Read the statements about the letter to Melanie Smith and decide if they are true or false.</p>
+            <div id="true-false-container" class="space-y-5"></div>
+            <div class="text-center mt-8">
+                <button class="btn-primary" onclick="checkTrueFalse()">Check Answers</button>
+            </div>
+        </div>
+
+        <!-- Activity 8: Fill the Gaps -->
+        <div id="activity-8" class="activity-card hidden">
+            <h2 class="text-2xl font-bold mb-4 text-gray-700">Activity 9: Fill the Gaps</h2>
+            <p class="mb-6 text-gray-600">Complete the sentences with the correct words from the box below.</p>
+            <div class="text-center mb-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
+                <p class="font-semibold text-blue-800">resigned | take on | lay off | made redundant | sacked | offered early retirement</p>
+            </div>
+            <div id="fill-gaps-container" class="space-y-4 text-lg"></div>
+            <div class="text-center mt-8">
+                <button class="btn-primary" onclick="checkFillGaps()">Check Answers</button>
+            </div>
+        </div>
+
+    </main>
+
+    <footer class="text-center py-8 mt-12 text-gray-500">
+        <p>Inspired by the "English Unpacked" series.</p>
+    </footer>
+
+    <script>
+        // --- General Activity Switching ---
+        function startActivities() {
+            document.getElementById('activity-home').classList.add('hidden');
+            document.getElementById('activity-nav').classList.remove('hidden');
+            document.getElementById('activity-nav').classList.add('flex');
+            document.getElementById('main-content').classList.remove('hidden');
+            showActivity(0);
+        }
+
+        function showActivity(activityNumber) {
+            document.querySelectorAll('.activity-card').forEach(card => {
+                card.classList.add('hidden');
+            });
+            document.getElementById(`activity-${activityNumber}`).classList.remove('hidden');
+
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.classList.remove('active');
+            });
+            document.getElementById(`nav-${activityNumber}`).classList.add('active');
+        }
+
+        function shuffle(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        // --- Activity 0: Word Partnerships ---
+        const partnershipData = [
+            { id: 'c', word: "sex discrimination", gapped: "s<input maxlength='2' data-id='c' class='gapped-input'> disc<input maxlength='8' data-id='c' class='gapped-input'>n", definition: "to treat someone of either sex unfairly" },
+            { id: 'h', word: "contract of employment", gapped: "con<input maxlength='4' data-id='h' class='gapped-input'>ct of em<input maxlength='6' data-id='h' class='gapped-input'>t", definition: "written details given to an employee to confirm terms and conditions" },
+            { id: 'e', word: "equal pay", gapped: "<input maxlength='2' data-id='e' class='gapped-input'>qu<input maxlength='2' data-id='e' class='gapped-input'>l pay", definition: "the same salary for men and women" },
+            { id: 'd', word: "parental leave", gapped: "pa<input maxlength='6' data-id='d' class='gapped-input'> l<input maxlength='2' data-id='d' class='gapped-input'>ve", definition: "the right for parents to take time off work to look after a child" },
+            { id: 'b', word: "workplace injuries", gapped: "workp<input maxlength='4' data-id='b' class='gapped-input'> inj<input maxlength='4' data-id='b' class='gapped-input'>es", definition: "accidents that happen at work" },
+            { id: 'a', word: "short-time working", gapped: "s<input maxlength='3' data-id='a' class='gapped-input'>ort-t<input maxlength='2' data-id='a' class='gapped-input'>me w<input maxlength='3' data-id='a' class='gapped-input'>king", definition: "reduced working hours, usually when a company has a decrease in production" },
+            { id: 'g', word: "disciplinary and grievance procedure", gapped: "disc<input maxlength='7' data-id='g' class='gapped-input'>y and gr<input maxlength='4' data-id='g' class='gapped-input'>van<input maxlength='1' data-id='g' class='gapped-input'>e procedure", definition: "procedure when an employee breaks the rules and what the employee can do if unhappy with a decision" },
+            { id: 'f', word: "work-related stress", gapped: "w<input maxlength='2' data-id='f' class='gapped-input'>k-re<input maxlength='2' data-id='f' class='gapped-input'>ted st<input maxlength='3' data-id='f' class='gapped-input'>ess", definition: "stress caused by negative factors in the job" }
+        ];
+        
+        let wordsState = {};
+        let selectedPartnership = null;
+        let selectedPartnershipDef = null;
+        let partnershipCorrectMatches = 0;
+
+        function initPartnerships() {
+            const wordsContainer = document.getElementById('partnerships-container');
+            const defsContainer = document.getElementById('partnership-definitions-container');
+            wordsContainer.innerHTML = '';
+            defsContainer.innerHTML = '';
+            
+            wordsState = {};
+            partnershipData.forEach(p => {
+                wordsState[p.id] = { spelledCorrectly: false, matched: false };
+            });
+
+            const shuffledWords = shuffle([...partnershipData]);
+            const shuffledDefs = shuffle([...partnershipData]);
+
+            shuffledWords.forEach(p => {
+                wordsContainer.innerHTML += `
+                    <div id="partnership-${p.id}" class="partnership-item p-3 bg-gray-100 rounded-lg flex items-center" onclick="selectPartnership('${p.id}')">
+                        <span class="font-mono">${p.gapped}</span>
+                    </div>`;
+            });
+
+            shuffledDefs.forEach(p => {
+                defsContainer.innerHTML += `<div id="partnership-def-${p.id}" class="definition-item p-3 bg-gray-100 rounded-lg" onclick="selectPartnershipDef('${p.id}')">${p.definition}</div>`;
+            });
+            
+            document.querySelectorAll('.gapped-input').forEach(input => {
+                input.addEventListener('input', (e) => checkSpelling(e.target.dataset.id));
+            });
+            
+            partnershipCorrectMatches = 0;
+            updatePartnershipFeedback();
+        }
+
+        function checkSpelling(id) {
+            const wordData = partnershipData.find(p => p.id === id);
+            const container = document.getElementById(`partnership-${id}`);
+            const inputs = container.querySelectorAll(`input[data-id="${id}"]`);
+            
+            let filledWord = wordData.gapped;
+            inputs.forEach(input => {
+                filledWord = filledWord.replace(/<input.*?>/, input.value);
+            });
+
+            if (filledWord.replace(/<[^>]*>/g, '').replace(/\s/g, '').toLowerCase() === wordData.word.replace(/\s/g, '').toLowerCase()) {
+                wordsState[id].spelledCorrectly = true;
+                container.style.borderColor = '#38a169';
+                inputs.forEach(i => { i.disabled = true; i.style.color = '#2f855a'; });
+            } else {
+                wordsState[id].spelledCorrectly = false;
+                container.style.borderColor = 'transparent';
+            }
+        }
+        
+        function selectPartnership(id) {
+            if (wordsState[id].matched) return;
+            if (!wordsState[id].spelledCorrectly) {
+                const feedbackEl = document.getElementById('partnership-feedback');
+                feedbackEl.textContent = "Please spell the word correctly before matching!";
+                feedbackEl.className = 'feedback mb-4 text-center incorrect';
+                setTimeout(() => {
+                    if(partnershipCorrectMatches < partnershipData.length) {
+                         updatePartnershipFeedback();
+                    }
+                }, 2000);
+                return;
+            }
+            selectedPartnership = id;
+            document.querySelectorAll('.partnership-item').forEach(el => el.classList.remove('selected'));
+            document.getElementById(`partnership-${id}`).classList.add('selected');
+            checkPartnershipMatch();
+        }
+
+        function selectPartnershipDef(id) {
+            if (wordsState[id].matched) return;
+            selectedPartnershipDef = id;
+            document.querySelectorAll('.definition-item').forEach(el => el.classList.remove('selected'));
+            document.getElementById(`partnership-def-${id}`).classList.add('selected');
+            checkPartnershipMatch();
+        }
+
+        function checkPartnershipMatch() {
+            if (selectedPartnership !== null && selectedPartnershipDef !== null) {
+                const wordEl = document.getElementById(`partnership-${selectedPartnership}`);
+                const defEl = document.getElementById(`partnership-def-${selectedPartnershipDef}`);
+                
+                if (selectedPartnership === selectedPartnershipDef) {
+                    wordsState[selectedPartnership].matched = true;
+                    wordEl.classList.remove('selected');
+                    defEl.classList.remove('selected');
+                    wordEl.classList.add('correct');
+                    defEl.classList.add('correct');
+                    partnershipCorrectMatches++;
+                    updatePartnershipFeedback();
+                } else {
+                    wordEl.classList.add('incorrect');
+                    defEl.classList.add('incorrect');
+                    setTimeout(() => {
+                        wordEl.classList.remove('incorrect', 'selected');
+                        defEl.classList.remove('incorrect', 'selected');
+                    }, 1000);
+                }
+                selectedPartnership = null;
+                selectedPartnershipDef = null;
+            }
+        }
+        
+        function updatePartnershipFeedback() {
+             const feedbackEl = document.getElementById('partnership-feedback');
+             feedbackEl.className = 'feedback mb-4 text-center';
+             feedbackEl.textContent = `Correct Matches: ${partnershipCorrectMatches} / ${partnershipData.length}`;
+             if (partnershipCorrectMatches === partnershipData.length) {
+                feedbackEl.textContent = "Excellent! You've matched them all!";
+                feedbackEl.classList.add('correct');
+             }
+        }
+
+        function resetPartnerships() {
+            initPartnerships();
+        }
+
+        // --- Activity 2: Listening Quiz (T/F) ---
+        const listeningQuizData = [
+            { statement: "Marion will be working flexitime in her new job.", answer: true },
+            { statement: "She will be paid for the first 12 weeks if she is ill.", answer: false },
+            { statement: "Her holiday entitlement is 20 days from the date she starts with Business Systems.", answer: false },
+            { statement: "She sent in copies of her references with her application.", answer: true },
+            { statement: "She hasn't told her employer in Marseille she's leaving yet.", answer: false },
+            { statement: "She will receive the offer letter in two weeks.", answer: false }
+        ];
+
+        function initListeningActivity() {
+            const container = document.getElementById('listening-quiz-container');
+            container.innerHTML = '';
+            listeningQuizData.forEach((item, index) => {
+                container.innerHTML += `
+                    <div id="listen-q-${index}" class="p-4 border border-gray-200 rounded-lg">
+                        <p class="font-semibold mb-3">${index + 1}. ${item.statement}</p>
+                        <div class="flex space-x-6">
+                            <label class="flex items-center cursor-pointer">
+                                <input type="radio" name="listen-${index}" value="true" class="mr-2"> True
+                            </label>
+                            <label class="flex items-center cursor-pointer">
+                                <input type="radio" name="listen-${index}" value="false" class="mr-2"> False
+                            </label>
+                        </div>
+                        <div id="listen-feedback-${index}" class="feedback mt-2"></div>
+                    </div>
+                `;
+            });
+        }
+
+        function checkListeningAnswers() {
+            listeningQuizData.forEach((item, index) => {
+                const selected = document.querySelector(`input[name="listen-${index}"]:checked`);
+                const feedbackEl = document.getElementById(`listen-feedback-${index}`);
+                const questionContainer = document.getElementById(`listen-q-${index}`);
+                
+                questionContainer.style.borderWidth = '2px';
+
+                if (selected) {
+                    const isCorrect = (selected.value === String(item.answer));
+                    if (isCorrect) {
+                        feedbackEl.textContent = "Correct!";
+                        feedbackEl.className = 'feedback correct';
+                        questionContainer.style.borderColor = '#38a169';
+                    } else {
+                        feedbackEl.textContent = `Incorrect. The correct answer is ${item.answer}.`;
+                        feedbackEl.className = 'feedback incorrect';
+                        questionContainer.style.borderColor = '#c53030';
+                    }
+                } else {
+                    feedbackEl.textContent = "Please select an answer.";
+                    feedbackEl.className = 'feedback incorrect';
+                    questionContainer.style.borderColor = '#c53030';
+                }
+            });
+        }
+        
+        // --- Activity 4: Listening Fill-in ---
+        const listeningFillData = [
+            { sentence: "Your basic salary will be £<input type='text' id='fill-0' class='w-24'> per annum.", answer: "25,000" },
+            { sentence: "The company pension scheme is <input type='text' id='fill-1' class='w-24'>.", answer: "contributory" },
+            { sentence: "Your normal hours of work are <input type='text' id='fill-2' class='w-24'> a week.", answer: "35" },
+            { sentence: "You are entitled to <input type='text' id='fill-3' class='w-24'> days' holiday.", answer: "25" },
+            { sentence: "We need to have your signed <input type='text' id='fill-4' class='w-24'> and two <input type='text' id='fill-5' class='w-24'>.", answer: ["contract", "references"] }
+        ];
+
+        function initListeningFill() {
+            const container = document.getElementById('listening-fill-container');
+            container.innerHTML = '';
+            listeningFillData.forEach((item, index) => {
+                let sentenceHtml = item.sentence;
+                if (Array.isArray(item.answer)) {
+                    sentenceHtml = item.sentence.replace("<input type='text'", `<input type='text' id='fill-${index}'`).replace("<input type='text'", `<input type='text' id='fill-${index+1}'`);
+                } else {
+                    sentenceHtml = item.sentence.replace("<input type='text'", `<input type='text' id='fill-${index}'`);
+                }
+                container.innerHTML += `
+                    <div class="p-3 bg-gray-50 rounded-lg">
+                        <p>${index + 1}. ${sentenceHtml}</p>
+                    </div>
+                `;
+            });
+        }
+
+        function checkListeningFill() {
+            let fillIndex = 0;
+            listeningFillData.forEach((item) => {
+                if (Array.isArray(item.answer)) {
+                    const input1 = document.getElementById(`fill-${fillIndex}`);
+                    const input2 = document.getElementById(`fill-${fillIndex + 1}`);
+                    if(input1.value.trim().toLowerCase() === item.answer[0] && input2.value.trim().toLowerCase() === item.answer[1]){
+                       input1.style.borderColor = '#38a169';
+                       input2.style.borderColor = '#38a169';
+                    } else {
+                       input1.style.borderColor = '#c53030';
+                       input2.style.borderColor = '#c53030';
+                    }
+                    fillIndex += 2;
+                } else {
+                    const inputEl = document.getElementById(`fill-${fillIndex}`);
+                    if (inputEl.value.trim().toLowerCase() === item.answer) {
+                        inputEl.style.borderColor = '#38a169';
+                        inputEl.style.backgroundColor = '#c6f6d5';
+                    } else {
+                        inputEl.style.borderColor = '#c53030';
+                        inputEl.style.backgroundColor = '#fed7d7';
+                    }
+                    fillIndex++;
+                }
+            });
+        }
+
+
+        // --- Activity 3: Sentence Matching ---
+        const sentenceMatchingData = [
+            { id: 'f', start: "I'm afraid we don't", end: "operate flexitime yet." },
+            { id: 'b', start: "We'd like to tell you something", end: "about conditions of employment." },
+            { id: 'a', start: "I'm sure that won't be a problem", end: "as it's only a week." },
+            { id: 'e', start: "By the way, we're currently looking", end: "at more flexible working arrangements ..." },
+            { id: 'd', start: "So let's start with", end: "your hours." },
+            { id: 'c', start: "If you are ill, we expect you", end: "to phone in as early as possible ..." }
+        ];
+
+        let selectedSentenceStart = null;
+        let selectedSentenceEnd = null;
+        let sentenceCorrectMatches = 0;
+
+        function initSentenceMatching() {
+            const startsContainer = document.getElementById('sentence-starts-container');
+            const endsContainer = document.getElementById('sentence-ends-container');
+            startsContainer.innerHTML = '';
+            endsContainer.innerHTML = '';
+
+            const starts = shuffle(sentenceMatchingData.map(item => ({ id: item.id, text: item.start })));
+            const ends = shuffle(sentenceMatchingData.map(item => ({ id: item.id, text: item.end })));
+
+            starts.forEach(item => {
+                startsContainer.innerHTML += `<div id="sentence-start-${item.id}" class="sentence-half p-3 bg-gray-100 rounded-lg" onclick="selectSentenceStart('${item.id}')">${item.text}</div>`;
+            });
+
+            ends.forEach(item => {
+                endsContainer.innerHTML += `<div id="sentence-end-${item.id}" class="sentence-half p-3 bg-gray-100 rounded-lg" onclick="selectSentenceEnd('${item.id}')">${item.text}</div>`;
+            });
+            
+            sentenceCorrectMatches = 0;
+            updateSentenceMatchFeedback();
+        }
+
+        function selectSentenceStart(id) {
+            if (document.getElementById(`sentence-start-${id}`).classList.contains('correct')) return;
+            selectedSentenceStart = id;
+            document.querySelectorAll('#sentence-starts-container .sentence-half').forEach(el => el.classList.remove('selected'));
+            document.getElementById(`sentence-start-${id}`).classList.add('selected');
+            checkSentenceMatch();
+        }
+
+        function selectSentenceEnd(id) {
+            if (document.getElementById(`sentence-end-${id}`).classList.contains('correct')) return;
+            selectedSentenceEnd = id;
+            document.querySelectorAll('#sentence-ends-container .sentence-half').forEach(el => el.classList.remove('selected'));
+            document.getElementById(`sentence-end-${id}`).classList.add('selected');
+            checkSentenceMatch();
+        }
+        
+        function updateSentenceMatchFeedback() {
+             const feedbackEl = document.getElementById('sentence-matching-feedback');
+             feedbackEl.textContent = `Correct Matches: ${sentenceCorrectMatches} / ${sentenceMatchingData.length}`;
+             if (sentenceCorrectMatches === sentenceMatchingData.length) {
+                feedbackEl.textContent = "Well done! You've matched all the sentences!";
+                feedbackEl.classList.add('correct');
+             } else {
+                feedbackEl.classList.remove('correct');
+             }
+        }
+
+        function checkSentenceMatch() {
+            if (selectedSentenceStart !== null && selectedSentenceEnd !== null) {
+                const startEl = document.getElementById(`sentence-start-${selectedSentenceStart}`);
+                const endEl = document.getElementById(`sentence-end-${selectedSentenceEnd}`);
+
+                if (selectedSentenceStart === selectedSentenceEnd) {
+                    startEl.classList.remove('selected');
+                    endEl.classList.remove('selected');
+                    startEl.classList.add('correct');
+                    endEl.classList.add('correct');
+                    sentenceCorrectMatches++;
+                    updateSentenceMatchFeedback();
+                } else {
+                    startEl.classList.add('incorrect');
+                    endEl.classList.add('incorrect');
+                    setTimeout(() => {
+                        startEl.classList.remove('incorrect', 'selected');
+                        endEl.classList.remove('incorrect', 'selected');
+                    }, 1000);
+                }
+                
+                selectedSentenceStart = null;
+                selectedSentenceEnd = null;
+            }
+        }
+
+        function resetSentenceMatching() {
+            initSentenceMatching();
+        }
+
+        // --- Activity 5: Crossword ---
+        function initCrossword() {
+            const container = document.getElementById('crossword-container');
+            container.innerHTML = ''; // Clear previous grid
+            const grid = document.createElement('div');
+            grid.className = 'crossword-grid';
+            
+            const cells = [
+                // 6A
+                {r:5, c:0, a:'P', num: 6}, {r:5, c:1, a:'E'}, {r:5, c:2, a:'R'}, {r:5, c:3, a:'M'}, {r:5, c:4, a:'A'}, {r:5, c:5, a:'N'}, {r:5, c:6, a:'E'}, {r:5, c:7, a:'N'}, {r:5, c:8, a:'T'},
+                // 7A
+                {r:6, c:2, a:'P', num: 7}, {r:6, c:3, a:'R'}, {r:6, c:4, a:'O'}, {r:6, c:5, a:'C'}, {r:6, c:6, a:'E'}, {r:6, c:7, a:'D'}, {r:6, c:8, a:'U'}, {r:6, c:9, a:'R'}, {r:6, c:10, a:'E'},
+                // 8A
+                {r:7, c:4, a:'I', num: 8}, {r:7, c:5, a:'N'}, {r:7, c:6, a:'S'}, {r:7, c:7, a:'T'}, {r:7, c:8, a:'E'}, {r:7, c:9, a:'A'}, {r:7, c:10, a:'D'},
+                // 9A
+                {r:8, c:2, a:'C', num: 9}, {r:8, c:3, a:'L'}, {r:8, c:4, a:'E'}, {r:8, c:5, a:'A'}, {r:8, c:6, a:'R'},
+                // 1D
+                {r:0, c:4, a:'R', num: 1}, {r:1, c:4, a:'E'}, {r:2, c:4, a:'F'}, {r:3, c:4, a:'E'}, {r:4, c:4, a:'R'}, {r:5, c:4, a:'E'}, {r:6, c:4, a:'E'}, {r:7, c:4, a:'S'},
+                // 2D
+                {r:1, c:6, a:'S', num: 2}, {r:2, c:6, a:'T'}, {r:3, c:6, a:'I'}, {r:4, c:6, a:'C'}, {r:5, c:6, a:'K'}, {r:6, c:6, a:'T'}, {r:7, c:6, a:'O'},
+                // 3D
+                {r:1, c:8, a:'C', num: 3}, {r:2, c:8, a:'O'}, {r:3, c:8, a:'N'}, {r:4, c:8, a:'T'}, {r:5, c:8, a:'R'}, {r:6, c:8, a:'A'}, {r:7, c:8, a:'C'}, {r:8, c:8, a:'T'},
+                // 4D
+                {r:2, c:0, a:'O', num: 4}, {r:3, c:0, a:'F'}, {r:4, c:0, a:'F'}, {r:5, c:0, a:'E'}, {r:6, c:0, a:'R'},
+                // 5D
+                {r:3, c:2, a:'R', num: 5}, {r:4, c:2, a:'E'}, {r:5, c:2, a:'F'}, {r:6, c:2, a:'E'}, {r:7, c:2, a:'R'}, {r:8, c:2, a:'E'}, {r:9, c:2, a:'N'}, {r:10, c:2, a:'C'}, {r:11, c:2, a:'E'},
+            ];
+            
+            const gridCells = Array(10 * 11).fill(null);
+            
+            cells.forEach(cell => {
+                gridCells[cell.r * 11 + cell.c] = cell;
+            });
+
+            for(let i=0; i < gridCells.length; i++) {
+                const cellData = gridCells[i];
+                if(cellData) {
+                    const cellContainer = document.createElement('div');
+                    cellContainer.className = 'crossword-cell-container';
+                    const input = document.createElement('input');
+                    input.type = 'text';
+                    input.maxLength = 1;
+                    input.className = 'crossword-cell';
+                    input.dataset.answer = cellData.a;
+                    
+                    if(cellData.num) {
+                        const numSpan = document.createElement('span');
+                        numSpan.className = 'clue-number';
+                        numSpan.textContent = cellData.num;
+                        cellContainer.appendChild(numSpan);
+                    }
+                    
+                    cellContainer.appendChild(input);
+                    grid.appendChild(cellContainer);
+                } else {
+                    const emptyCell = document.createElement('div');
+                    emptyCell.className = 'crossword-cell empty';
+                    grid.appendChild(emptyCell);
+                }
+            }
+            container.appendChild(grid);
+        }
+        
+        function checkCrossword() {
+            const inputs = document.querySelectorAll('#crossword-container .crossword-cell');
+            inputs.forEach(input => {
+                if(!input.dataset.answer) return;
+                if (input.value.toUpperCase() === input.dataset.answer) {
+                    input.style.backgroundColor = '#c6f6d5'; // correct
+                } else if (input.value !== '') {
+                    input.style.backgroundColor = '#fed7d7'; // incorrect
+                } else {
+                    input.style.backgroundColor = 'white';
+                }
+            });
+        }
+
+        // --- Activity 6: Vocabulary Match ---
+        const matchingData = [
+            { id: 1, phrase: 'to create rapport', definition: 'to develop a good relationship' },
+            { id: 2, phrase: 'to understand their needs', definition: 'to know what they want' },
+            { id: 3, phrase: 'to provide advice', definition: 'to suggest the best way to do something' },
+            { id: 4, phrase: 'to promote a range of services', definition: 'to attract people\'s attention to what you offer' },
+            { id: 5, phrase: 'to attend an interview', definition: 'to visit a company to discuss a job' },
+            { id: 6, phrase: 'to be notified of the outcome', definition: 'to be told the results of a decision' },
+            { id: 7, phrase: 'to receive a shift allowance', definition: 'to get extra money for working \'unsociable\' hours' },
+            { id: 8, phrase: 'to be entitled to a benefits package', definition: 'to have the right to extra advantages on top of salary' },
+        ];
+
+        let selectedPhrase = null;
+        let selectedDefinition = null;
+        let correctMatches = 0;
+
+        function initMatchingGame() {
+            const phrasesContainer = document.getElementById('phrases-container');
+            const definitionsContainer = document.getElementById('definitions-container');
+            
+            phrasesContainer.innerHTML = '';
+            definitionsContainer.innerHTML = '';
+
+            const phrases = shuffle(matchingData.map(item => ({ id: item.id, text: item.phrase })));
+            const definitions = shuffle(matchingData.map(item => ({ id: item.id, text: item.definition })));
+
+            phrases.forEach(item => {
+                phrasesContainer.innerHTML += `<div id="phrase-${item.id}" class="matching-item p-3 bg-gray-100 rounded-lg" onclick="selectPhrase(${item.id})">${item.text}</div>`;
+            });
+
+            definitions.forEach(item => {
+                definitionsContainer.innerHTML += `<div id="definition-${item.id}" class="matching-item p-3 bg-gray-100 rounded-lg" onclick="selectDefinition(${item.id})">${item.text}</div>`;
+            });
+            
+            correctMatches = 0;
+            updateFeedback();
+        }
+
+        function selectPhrase(id) {
+            if (document.getElementById(`phrase-${id}`).classList.contains('correct')) return;
+            selectedPhrase = id;
+            document.querySelectorAll('#phrases-container .matching-item').forEach(el => el.classList.remove('selected'));
+            document.getElementById(`phrase-${id}`).classList.add('selected');
+            checkMatch();
+        }
+
+        function selectDefinition(id) {
+            if (document.getElementById(`definition-${id}`).classList.contains('correct')) return;
+            selectedDefinition = id;
+            document.querySelectorAll('#definitions-container .matching-item').forEach(el => el.classList.remove('selected'));
+            document.getElementById(`definition-${id}`).classList.add('selected');
+            checkMatch();
+        }
+        
+        function updateFeedback() {
+             const feedbackEl = document.getElementById('matching-feedback');
+             feedbackEl.textContent = `Correct Matches: ${correctMatches} / ${matchingData.length}`;
+             if (correctMatches === matchingData.length) {
+                feedbackEl.textContent = "Congratulations! You've matched them all!";
+                feedbackEl.classList.add('correct');
+             } else {
+                feedbackEl.classList.remove('correct');
+             }
+        }
+
+        function checkMatch() {
+            if (selectedPhrase !== null && selectedDefinition !== null) {
+                const phraseEl = document.getElementById(`phrase-${selectedPhrase}`);
+                const definitionEl = document.getElementById(`definition-${selectedDefinition}`);
+
+                if (selectedPhrase === selectedDefinition) {
+                    phraseEl.classList.remove('selected');
+                    definitionEl.classList.remove('selected');
+                    phraseEl.classList.add('correct');
+                    definitionEl.classList.add('correct');
+                    phraseEl.onclick = null;
+                    definitionEl.onclick = null;
+                    correctMatches++;
+                    updateFeedback();
+                } else {
+                    phraseEl.classList.add('incorrect');
+                    definitionEl.classList.add('incorrect');
+                    setTimeout(() => {
+                        phraseEl.classList.remove('incorrect', 'selected');
+                        definitionEl.classList.remove('incorrect', 'selected');
+                    }, 1000);
+                }
+                
+                selectedPhrase = null;
+                selectedDefinition = null;
+            }
+        }
+
+        function resetMatching() {
+            initMatchingGame();
+        }
+
+        // --- Activity 7: True or False ---
+        const trueFalseData = [
+            { statement: "Melanie has applied for a position as Call Centre Assistant.", answer: false, explanation: "She applied for a Team Leader position." },
+            { statement: "She sent a CV with her letter of application.", answer: true, explanation: "" },
+            { statement: "The whole recruitment process will be completed within two weeks.", answer: false, explanation: "The initial interview is within two weeks, but the assessment centre is next month." },
+            { statement: "The company will pay for Melanie's journey to the interview.", answer: true, explanation: "" },
+            { statement: "Applicants will be told what the assessment centre procedure involves when they get to the company.", answer: false, explanation: "Full details will be sent in advance if selected." },
+            { statement: "They want Melanie to complete an application form.", answer: true, explanation: "" },
+            { statement: "Melanie has to call Madrid to arrange the interview.", answer: false, explanation: "She has to call the London office." }
+        ];
+
+        function initTrueFalse() {
+            const container = document.getElementById('true-false-container');
+            container.innerHTML = '';
+            trueFalseData.forEach((item, index) => {
+                container.innerHTML += `
+                    <div id="tf-q-${index}" class="p-4 border border-gray-200 rounded-lg">
+                        <p class="font-semibold mb-3">${index + 1}. ${item.statement}</p>
+                        <div class="flex space-x-6">
+                            <label class="flex items-center cursor-pointer">
+                                <input type="radio" name="tf-${index}" value="true" class="mr-2"> True
+                            </label>
+                            <label class="flex items-center cursor-pointer">
+                                <input type="radio" name="tf-${index}" value="false" class="mr-2"> False
+                            </label>
+                        </div>
+                        <div id="tf-feedback-${index}" class="feedback mt-2"></div>
+                    </div>
+                `;
+            });
+        }
+
+        function checkTrueFalse() {
+            trueFalseData.forEach((item, index) => {
+                const selected = document.querySelector(`input[name="tf-${index}"]:checked`);
+                const feedbackEl = document.getElementById(`tf-feedback-${index}`);
+                const questionContainer = document.getElementById(`tf-q-${index}`);
+                
+                questionContainer.style.borderWidth = '2px';
+
+                if (selected) {
+                    const isCorrect = (selected.value === String(item.answer));
+                    if (isCorrect) {
+                        feedbackEl.textContent = "Correct!";
+                        feedbackEl.className = 'feedback correct';
+                        questionContainer.style.borderColor = '#38a169';
+                    } else {
+                        feedbackEl.textContent = `Incorrect. The correct answer is ${item.answer}. ${item.explanation}`;
+                        feedbackEl.className = 'feedback incorrect';
+                        questionContainer.style.borderColor = '#c53030';
+                    }
+                } else {
+                    feedbackEl.textContent = "Please select an answer.";
+                    feedbackEl.className = 'feedback incorrect';
+                    questionContainer.style.borderColor = '#c53030';
+                }
+            });
+        }
+
+        // --- Activity 8: Fill the Gaps ---
+        const fillGapsData = [
+            { sentence: "My best marketing assistant has ______. She's got herself another job with more money!", answer: "resigned" },
+            { sentence: "Will we be able to ______ a replacement when John hands in his resignation?", answer: "take on" },
+            { sentence: "We can't continue working in these freezing temperatures, so we'll have to ______ six workers until the end of February.", answer: "lay off" },
+            { sentence: "Those staff who can't relocate to the new factory in the north when we close down will be ______.", answer: "made redundant" },
+            { sentence: "Fill me in on the details; I believe one of our shop assistants has been ______ for stealing, is that right?", answer: "sacked" },
+            { sentence: "A new directive from head office has been introduced that all employees over 63 will be ______.", answer: "offered early retirement" }
+        ];
+
+        function initFillGaps() {
+            const container = document.getElementById('fill-gaps-container');
+            container.innerHTML = '';
+            fillGapsData.forEach((item, index) => {
+                const sentenceHtml = item.sentence.replace('______', `<input type="text" id="gap-${index}" class="mx-2 align-middle">`);
+                container.innerHTML += `
+                    <div class="p-3 bg-gray-50 rounded-lg">
+                        <p>${index + 1}. ${sentenceHtml}</p>
+                        <div id="gap-feedback-${index}" class="feedback text-sm mt-1 ml-6"></div>
+                    </div>
+                `;
+            });
+        }
+
+        function checkFillGaps() {
+            fillGapsData.forEach((item, index) => {
+                const inputEl = document.getElementById(`gap-${index}`);
+                const feedbackEl = document.getElementById(`gap-feedback-${index}`);
+                const userAnswer = inputEl.value.trim().toLowerCase();
+                const correctAnswer = item.answer.toLowerCase();
+
+                if (userAnswer === correctAnswer) {
+                    feedbackEl.textContent = "Correct!";
+                    feedbackEl.className = 'feedback text-sm mt-1 ml-6 correct';
+                    inputEl.style.borderColor = '#38a169';
+                    inputEl.style.backgroundColor = '#c6f6d5';
+                } else {
+                    feedbackEl.textContent = `Not quite. The correct answer is "${item.answer}".`;
+                    feedbackEl.className = 'feedback text-sm mt-1 ml-6 incorrect';
+                    inputEl.style.borderColor = '#c53030';
+                    inputEl.style.backgroundColor = '#fed7d7';
+                }
+            });
+        }
+
+
+        // --- Initial Load ---
+        window.onload = () => {
+            initPartnerships();
+            initListeningActivity();
+            initListeningFill();
+            initMatchingGame();
+            initSentenceMatching();
+            initCrossword();
+            initTrueFalse();
+            initFillGaps();
+        };
+    </script>
+</body>
+</html>
