@@ -106,7 +106,6 @@
             border-color: #6a11cb;
         }
         .gapped-input {
-            width: 3ch;
             text-align: center;
             border: none;
             border-bottom: 2px solid #cbd5e0;
@@ -114,6 +113,7 @@
             margin: 0 1px;
             font-weight: bold;
             color: #6a11cb;
+            vertical-align: bottom;
         }
         .gapped-input:focus {
             border-color: #6a11cb;
@@ -123,41 +123,34 @@
             width: 100%;
             margin-top: 1rem;
         }
-        /* Crossword Styles */
-        .crossword-grid {
-            display: grid;
-            grid-template-columns: repeat(11, 35px);
-            grid-template-rows: repeat(10, 35px);
-            gap: 2px;
-            margin: 2rem auto;
-            justify-content: center;
-        }
-        .crossword-cell {
-            width: 35px;
-            height: 35px;
-            border: 1px solid #ccc;
+        /* Category Sort & Letter Sort Styles */
+        .sortable-item {
+            cursor: grab;
+            padding: 0.75rem;
+            background-color: #e0e7ff;
+            border: 2px solid #c7d2fe;
+            border-radius: 0.5rem;
+            transition: background-color 0.2s;
             text-align: center;
-            font-size: 1.2rem;
-            text-transform: uppercase;
-            background-color: white;
         }
-        .crossword-cell:focus {
-            outline: 2px solid #6a11cb;
+        .sortable-item:active {
+            cursor: grabbing;
         }
-        .crossword-cell.empty {
-            background-color: transparent;
-            border: none;
+        .drop-zone {
+            padding: 1rem;
+            border: 2px dashed #9ca3af;
+            border-radius: 0.5rem;
+            background-color: #f9fafb;
+            min-height: 100px;
+            transition: background-color 0.2s, border-color 0.2s;
         }
-        .crossword-cell-container {
-            position: relative;
+        .drop-zone.drag-over {
+            background-color: #dbeafe;
+            border-color: #60a5fa;
         }
-        .clue-number {
-            position: absolute;
-            top: 1px;
-            left: 2px;
-            font-size: 0.7rem;
-            font-weight: bold;
-            color: #4a5568;
+        em {
+            font-style: italic;
+            color: #4f46e5;
         }
     </style>
 </head>
@@ -178,14 +171,22 @@
         <a id="nav-2" class="nav-link" onclick="showActivity(2)">3. Listening (T/F)</a>
         <a id="nav-3" class="nav-link" onclick="showActivity(3)">4. Sentence Matching</a>
         <a id="nav-4" class="nav-link" onclick="showActivity(4)">5. Listening (Fill-in)</a>
-        <a id="nav-5" class="nav-link" onclick="showActivity(5)">6. Crossword</a>
-        <a id="nav-6" class="nav-link" onclick="showActivity(6)">7. Vocabulary Match</a>
-        <a id="nav-7" class="nav-link" onclick="showActivity(7)">8. True or False</a>
-        <a id="nav-8" class="nav-link" onclick="showActivity(8)">9. Fill the Gaps</a>
+        <a id="nav-5" class="nav-link" onclick="showActivity(5)">6. Category Sort</a>
+        <a id="nav-6" class="nav-link" onclick="showActivity(6)">7. Word Families</a>
+        <a id="nav-7" class="nav-link" onclick="showActivity(7)">8. Contract Matching</a>
+        <a id="nav-8" class="nav-link" onclick="showActivity(8)">9. Complete Sentences</a>
+        <a id="nav-9" class="nav-link" onclick="showActivity(9)">10. Letter Sort</a>
+        <a id="nav-10" class="nav-link" onclick="showActivity(10)">11. Vocabulary Match</a>
+        <a id="nav-11" class="nav-link" onclick="showActivity(11)">12. Synonym Match</a>
+        <a id="nav-12" class="nav-link" onclick="showActivity(12)">13. Dealing with Grievances</a>
+        <a id="nav-13" class="nav-link" onclick="showActivity(13)">14. Discuss the Article</a>
+        <a id="nav-14" class="nav-link" onclick="showActivity(14)">15. True or False</a>
+        <a id="nav-15" class="nav-link" onclick="showActivity(15)">16. Fill the Gaps</a>
     </nav>
 
     <main id="main-content" class="container mx-auto px-4 sm:px-6 lg:px-8 hidden">
 
+        <!-- All Activity divs go here... -->
         <!-- Activity 0: Word Partnerships -->
         <div id="activity-0" class="activity-card">
             <h2 class="text-2xl font-bold mb-4 text-gray-700">Activity 1: Word Partnerships</h2>
@@ -196,14 +197,14 @@
                 <div id="partnership-definitions-container" class="space-y-3"></div>
             </div>
              <div class="text-center mt-6">
-                <button class="btn-primary" onclick="resetPartnerships()">Reset Game</button>
+                <button class="btn-primary" onclick="initPartnerships()">Reset Game</button>
             </div>
         </div>
 
         <!-- Activity 1: Key Vocabulary -->
         <div id="activity-1" class="activity-card hidden">
             <h2 class="text-2xl font-bold mb-4 text-gray-700">Activity 2: Key Vocabulary</h2>
-            <p class="mb-6 text-gray-600">Review the key vocabulary from this unit.</p>
+            <p class="mb-6 text-gray-600">Review the key vocabulary from this unit. Now match the headlines with some of the word partnerships.</p>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
                 <div>
                     <img src="https://johanka2014.github.io/englishunpacked/Newspaper_Headlines.png" alt="Newspaper Headlines" class="w-full h-auto rounded-xl object-contain shadow-lg">
@@ -244,7 +245,7 @@
             </div>
             <div id="sentence-matching-feedback" class="feedback mt-6 text-center"></div>
             <div class="text-center mt-6">
-                <button class="btn-primary" onclick="resetSentenceMatching()">Reset Game</button>
+                <button class="btn-primary" onclick="initSentenceMatching()">Reset Game</button>
             </div>
         </div>
 
@@ -261,38 +262,106 @@
             </div>
         </div>
         
-        <!-- Activity 5: Crossword -->
+        <!-- Activity 5: Category Sort -->
         <div id="activity-5" class="activity-card hidden">
-            <h2 class="text-2xl font-bold mb-4 text-gray-700">Activity 6: Crossword</h2>
-            <p class="mb-6 text-gray-600">Complete the puzzle with words from the listening exercise.</p>
-            <div class="flex flex-col md:flex-row gap-8 justify-center">
-                <div id="crossword-container"></div>
-                <div>
-                    <h3 class="text-xl font-bold mb-2">Across</h3>
-                    <ul class="list-disc list-inside space-y-1">
-                        <li><b>6.</b> the opposite of temporary (9)</li>
-                        <li><b>7.</b> ways of doing things (9)</li>
-                        <li><b>8.</b> instead (of sth else) (7)</li>
-                        <li><b>9.</b> to get official permission: to ... sth with sb (5)</li>
-                    </ul>
-                    <h3 class="text-xl font-bold mt-6 mb-2">Down</h3>
-                    <ul class="list-disc list-inside space-y-1">
-                        <li><b>1.</b> people who supply the information in 5 down (8)</li>
-                        <li><b>2.</b> to agree to sth, to keep a promise (7)</li>
-                        <li><b>3.</b> an official written agreement (8)</li>
-                        <li><b>4.</b> letter containing all terms and conditions: ... letter (5)</li>
-                        <li><b>5.</b> information about how well you worked in your previous job(s) (9)</li>
-                    </ul>
+            <h2 class="text-2xl font-bold mb-4 text-gray-700">Activity 6: Category Sort</h2>
+            <p class="mb-6 text-gray-600">Drag and drop the phrases into the correct categories.</p>
+            <div class="flex flex-col gap-8">
+                <div class="w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <div>
+                        <h3 class="font-bold text-lg mb-2 text-center">Working time</h3>
+                        <div class="drop-zone min-h-[200px]" data-category="working-time"></div>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-lg mb-2 text-center">Employment status</h3>
+                        <div class="drop-zone min-h-[200px]" data-category="employment-status"></div>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-lg mb-2 text-center">Absence</h3>
+                        <div class="drop-zone min-h-[200px]" data-category="absence"></div>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-lg mb-2 text-center">Ending employment</h3>
+                        <div class="drop-zone min-h-[200px]" data-category="ending-employment"></div>
+                    </div>
+                </div>
+                <div id="sortable-items-container" class="w-full p-4 bg-gray-100 rounded-lg">
+                    <h3 class="font-bold text-lg mb-2 text-center">Words & Phrases</h3>
+                    <div id="sort-items-pool" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2"></div>
                 </div>
             </div>
             <div class="text-center mt-8">
-                <button class="btn-primary" onclick="checkCrossword()">Check Answers</button>
+                <button class="btn-primary" onclick="checkCategorySort()">Check Answers</button>
+                <button class="btn-primary bg-gray-500 hover:bg-gray-600" onclick="initCategorySort()">Reset</button>
+            </div>
+        </div>
+        
+        <!-- Activity 6: Word Families -->
+        <div id="activity-6" class="activity-card hidden">
+            <h2 class="text-2xl font-bold mb-4 text-gray-700">Activity 7: Word Families</h2>
+            <p class="mb-6 text-gray-600">Complete the following sentences with words related to the key word <b>flex</b>. (You might need to add prefixes or suffixes and change the form.)</p>
+            <div id="word-families-container" class="space-y-4 text-lg"></div>
+            <div class="text-center mt-8">
+                <button class="btn-primary" onclick="checkWordFamilies()">Check Answers</button>
             </div>
         </div>
 
-        <!-- Activity 6: Vocabulary Match -->
-        <div id="activity-6" class="activity-card hidden">
-            <h2 class="text-2xl font-bold mb-4 text-gray-700">Activity 7: Vocabulary Match</h2>
+        <!-- Activity 7: Contract Matching -->
+        <div id="activity-7" class="activity-card hidden">
+            <h2 class="text-2xl font-bold mb-4 text-gray-700">Activity 8: Contract Matching</h2>
+            <p class="mb-6 text-gray-600">Look at the list of points that should be mentioned in a contract of employment. Match them to the extracts from some model contracts.</p>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div id="contract-points-container" class="space-y-3"></div>
+                <div id="contract-extracts-container" class="space-y-3"></div>
+            </div>
+            <div id="contract-matching-feedback" class="feedback mt-6 text-center"></div>
+            <div class="text-center mt-6">
+                <button class="btn-primary" onclick="initContractMatching()">Reset Game</button>
+            </div>
+        </div>
+
+        <!-- Activity 8: Complete Sentences -->
+        <div id="activity-8" class="activity-card hidden">
+            <h2 class="text-2xl font-bold mb-4 text-gray-700">Activity 9: Complete Sentences</h2>
+            <p class="mb-6 text-gray-600">Complete these sentences with words and phrases from the box.</p>
+            <div class="text-center mb-6 p-4 bg-purple-50 rounded-lg border border-purple-200">
+                <p class="font-semibold text-purple-800">can be found | notified in writing | are expected | may be required | notify | payable monthly in arrears | will be discussed | are asked | subject to disciplinary action | are entitled to</p>
+            </div>
+            <div id="complete-sentences-container" class="space-y-4 text-lg"></div>
+            <div class="text-center mt-8">
+                <button class="btn-primary" onclick="checkCompleteSentences()">Check Answers</button>
+            </div>
+        </div>
+
+        <!-- Activity 9: Letter Sort -->
+        <div id="activity-9" class="activity-card hidden">
+             <h2 class="text-2xl font-bold mb-4 text-gray-700">Activity 10: Letter Sort</h2>
+             <p class="mb-6 text-gray-600">An offer letter and a rejection letter have been mixed up. Look at the paragraphs a-j. Sort them, and put them in the correct order.</p>
+             <div class="flex flex-col gap-8">
+                 <div class="w-full grid grid-cols-1 md:grid-cols-2 gap-4">
+                     <div>
+                         <h3 class="font-bold text-lg mb-2 text-center text-green-700">Offer Letter</h3>
+                         <div class="drop-zone min-h-[300px] border-green-400 bg-green-50" data-category="offer"></div>
+                     </div>
+                     <div>
+                         <h3 class="font-bold text-lg mb-2 text-center text-red-700">Rejection Letter</h3>
+                         <div class="drop-zone min-h-[300px] border-red-400 bg-red-50" data-category="rejection"></div>
+                     </div>
+                 </div>
+                 <div id="letter-items-container" class="w-full p-4 bg-gray-100 rounded-lg">
+                     <h3 class="font-bold text-lg mb-2 text-center">Paragraphs</h3>
+                     <div id="letter-items-pool" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-2"></div>
+                 </div>
+             </div>
+             <div class="text-center mt-8">
+                 <button class="btn-primary" onclick="checkLetterSort()">Check Order</button>
+                 <button class="btn-primary bg-gray-500 hover:bg-gray-600" onclick="initLetterSort()">Reset</button>
+             </div>
+        </div>
+
+        <!-- Activity 10: Vocabulary Match -->
+        <div id="activity-10" class="activity-card hidden">
+            <h2 class="text-2xl font-bold mb-4 text-gray-700">Activity 11: Vocabulary Match</h2>
             <p class="mb-6 text-gray-600">Match the phrases on the left with their correct definitions on the right. Click a phrase, then click its matching definition.</p>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div id="phrases-container" class="space-y-3"></div>
@@ -300,13 +369,56 @@
             </div>
             <div id="matching-feedback" class="feedback mt-6 text-center"></div>
             <div class="text-center mt-6">
-                <button class="btn-primary" onclick="resetMatching()">Reset Game</button>
+                <button class="btn-primary" onclick="initMatchingGame()">Reset Game</button>
             </div>
         </div>
 
-        <!-- Activity 7: True or False -->
-        <div id="activity-7" class="activity-card hidden">
-            <h2 class="text-2xl font-bold mb-4 text-gray-700">Activity 8: True or False?</h2>
+        <!-- Activity 11: Synonym Match -->
+        <div id="activity-11" class="activity-card hidden">
+            <h2 class="text-2xl font-bold mb-4 text-gray-700">Activity 12: Synonym Match</h2>
+            <p class="mb-6 text-gray-600">Look at these words and phrases from the letters above, and match the words in italics with similar words on the right.</p>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div id="synonym-phrases-container" class="space-y-3"></div>
+                <div id="synonym-words-container" class="space-y-3"></div>
+            </div>
+            <div id="synonym-matching-feedback" class="feedback mt-6 text-center"></div>
+            <div class="text-center mt-6">
+                <button class="btn-primary" onclick="initSynonymMatch()">Reset Game</button>
+            </div>
+        </div>
+        
+        <!-- Activity 12: Dealing with Grievances -->
+        <div id="activity-12" class="activity-card hidden">
+            <h2 class="text-2xl font-bold mb-4 text-gray-700">Activity 13: Dealing with Grievances</h2>
+            <p class="mb-6 text-gray-600">Read this article from an HR trade magazine and complete the gaps with words from the list.</p>
+             <div class="text-center mb-6 p-4 bg-purple-50 rounded-lg border border-purple-200">
+                <p class="font-semibold text-purple-800">behaviour | breaking | conditions | disciplinary | entitled | entitlement | occur | policy | representative | safety</p>
+            </div>
+            <div id="grievances-container" class="space-y-4 text-lg"></div>
+            <div class="text-center mt-8">
+                <button class="btn-primary" onclick="checkGrievances()">Check Answers</button>
+            </div>
+        </div>
+
+        <!-- Activity 13: Discuss the Article -->
+        <div id="activity-13" class="activity-card hidden">
+            <h2 class="text-2xl font-bold mb-4 text-gray-700">Activity 14: Discuss the Article</h2>
+            <p class="mb-6 text-gray-600">Now discuss the article and the following questions.</p>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+                <div class="text-lg space-y-4">
+                    <p><b>1.</b> What should employees in your company do if they have a grievance? What role, if any, does the trade union play?</p>
+                    <p><b>2.</b> What are some of the problems that can lead to disciplinary procedures?</p>
+                    <p><b>3.</b> How do you discipline staff if they do something wrong?</p>
+                </div>
+                <div>
+                    <img src="https://johanka2014.github.io/English_for_HR/discipline.png" alt="Disciplinary meeting" class="w-full h-auto rounded-xl object-contain shadow-lg">
+                </div>
+            </div>
+        </div>
+
+        <!-- Activity 14: True or False -->
+        <div id="activity-14" class="activity-card hidden">
+            <h2 class="text-2xl font-bold mb-4 text-gray-700">Activity 15: True or False?</h2>
             <p class="mb-6 text-gray-600">Read the statements about the letter to Melanie Smith and decide if they are true or false.</p>
             <div id="true-false-container" class="space-y-5"></div>
             <div class="text-center mt-8">
@@ -314,9 +426,9 @@
             </div>
         </div>
 
-        <!-- Activity 8: Fill the Gaps -->
-        <div id="activity-8" class="activity-card hidden">
-            <h2 class="text-2xl font-bold mb-4 text-gray-700">Activity 9: Fill the Gaps</h2>
+        <!-- Activity 15: Fill the Gaps -->
+        <div id="activity-15" class="activity-card hidden">
+            <h2 class="text-2xl font-bold mb-4 text-gray-700">Activity 16: Fill the Gaps</h2>
             <p class="mb-6 text-gray-600">Complete the sentences with the correct words from the box below.</p>
             <div class="text-center mb-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
                 <p class="font-semibold text-blue-800">resigned | take on | lay off | made redundant | sacked | offered early retirement</p>
@@ -334,7 +446,9 @@
     </footer>
 
     <script>
-        // --- General Activity Switching ---
+        let currentActivityIndex = 0;
+
+        // --- General Activity Switching and Cleanup ---
         function startActivities() {
             document.getElementById('activity-home').classList.add('hidden');
             document.getElementById('activity-nav').classList.remove('hidden');
@@ -343,16 +457,54 @@
             showActivity(0);
         }
 
-        function showActivity(activityNumber) {
-            document.querySelectorAll('.activity-card').forEach(card => {
-                card.classList.add('hidden');
-            });
-            document.getElementById(`activity-${activityNumber}`).classList.remove('hidden');
+        function destroyActivity(index) {
+            switch (index) {
+                case 0: destroyPartnerships(); break;
+                case 2: destroyListeningQuiz(); break;
+                case 3: destroySentenceMatching(); break;
+                case 4: destroyListeningFill(); break;
+                case 5: destroyCategorySort(); break;
+                case 6: destroyWordFamilies(); break;
+                case 7: destroyContractMatching(); break;
+                case 8: destroyCompleteSentences(); break;
+                case 9: destroyLetterSort(); break;
+                case 10: destroyMatchingGame(); break;
+                case 11: destroySynonymMatch(); break;
+                case 12: destroyGrievances(); break;
+                // No destroy for activity 13 as it's static
+                case 14: destroyTrueFalse(); break;
+                case 15: destroyFillGaps(); break;
+            }
+        }
 
-            document.querySelectorAll('.nav-link').forEach(link => {
-                link.classList.remove('active');
-            });
-            document.getElementById(`nav-${activityNumber}`).classList.add('active');
+        function initActivity(index) {
+            switch (index) {
+                case 0: initPartnerships(); break;
+                case 2: initListeningActivity(); break;
+                case 3: initSentenceMatching(); break;
+                case 4: initListeningFill(); break;
+                case 5: initCategorySort(); break;
+                case 6: initWordFamilies(); break;
+                case 7: initContractMatching(); break;
+                case 8: initCompleteSentences(); break;
+                case 9: initLetterSort(); break;
+                case 10: initMatchingGame(); break;
+                case 11: initSynonymMatch(); break;
+                case 12: initGrievances(); break;
+                // No init for activity 13 as it's static
+                case 14: initTrueFalse(); break;
+                case 15: initFillGaps(); break;
+            }
+        }
+
+        function showActivity(newIndex) {
+            destroyActivity(currentActivityIndex);
+            document.querySelectorAll('.activity-card').forEach(card => card.classList.add('hidden'));
+            document.getElementById(`activity-${newIndex}`).classList.remove('hidden');
+            document.querySelectorAll('.nav-link').forEach(link => link.classList.remove('active'));
+            document.getElementById(`nav-${newIndex}`).classList.add('active');
+            initActivity(newIndex);
+            currentActivityIndex = newIndex;
         }
 
         function shuffle(array) {
@@ -365,14 +517,14 @@
 
         // --- Activity 0: Word Partnerships ---
         const partnershipData = [
-            { id: 'c', word: "sex discrimination", gapped: "s<input maxlength='2' data-id='c' class='gapped-input'> disc<input maxlength='8' data-id='c' class='gapped-input'>n", definition: "to treat someone of either sex unfairly" },
-            { id: 'h', word: "contract of employment", gapped: "con<input maxlength='4' data-id='h' class='gapped-input'>ct of em<input maxlength='6' data-id='h' class='gapped-input'>t", definition: "written details given to an employee to confirm terms and conditions" },
-            { id: 'e', word: "equal pay", gapped: "<input maxlength='2' data-id='e' class='gapped-input'>qu<input maxlength='2' data-id='e' class='gapped-input'>l pay", definition: "the same salary for men and women" },
-            { id: 'd', word: "parental leave", gapped: "pa<input maxlength='6' data-id='d' class='gapped-input'> l<input maxlength='2' data-id='d' class='gapped-input'>ve", definition: "the right for parents to take time off work to look after a child" },
-            { id: 'b', word: "workplace injuries", gapped: "workp<input maxlength='4' data-id='b' class='gapped-input'> inj<input maxlength='4' data-id='b' class='gapped-input'>es", definition: "accidents that happen at work" },
-            { id: 'a', word: "short-time working", gapped: "s<input maxlength='3' data-id='a' class='gapped-input'>ort-t<input maxlength='2' data-id='a' class='gapped-input'>me w<input maxlength='3' data-id='a' class='gapped-input'>king", definition: "reduced working hours, usually when a company has a decrease in production" },
-            { id: 'g', word: "disciplinary and grievance procedure", gapped: "disc<input maxlength='7' data-id='g' class='gapped-input'>y and gr<input maxlength='4' data-id='g' class='gapped-input'>van<input maxlength='1' data-id='g' class='gapped-input'>e procedure", definition: "procedure when an employee breaks the rules and what the employee can do if unhappy with a decision" },
-            { id: 'f', word: "work-related stress", gapped: "w<input maxlength='2' data-id='f' class='gapped-input'>k-re<input maxlength='2' data-id='f' class='gapped-input'>ted st<input maxlength='3' data-id='f' class='gapped-input'>ess", definition: "stress caused by negative factors in the job" }
+            { id: 'c', word: "sex discrimination", gapped: "s<input maxlength='2' data-id='c' class='gapped-input' style='width: 5ch;'> disc<input maxlength='8' data-id='c' class='gapped-input' style='width: 17ch;'>n", definition: "to treat someone of either sex unfairly" },
+            { id: 'h', word: "contract of employment", gapped: "con<input maxlength='4' data-id='h' class='gapped-input' style='width: 9ch;'>ct of em<input maxlength='6' data-id='h' class='gapped-input' style='width: 13ch;'>t", definition: "written details given to an employee to confirm terms and conditions" },
+            { id: 'e', word: "equal pay", gapped: "<input maxlength='2' data-id='e' class='gapped-input' style='width: 5ch;'>qu<input maxlength='2' data-id='e' class='gapped-input' style='width: 5ch;'>l pay", definition: "the same salary for men and women" },
+            { id: 'd', word: "parental leave", gapped: "pa<input maxlength='6' data-id='d' class='gapped-input' style='width: 13ch;'> l<input maxlength='2' data-id='d' class='gapped-input' style='width: 5ch;'>ve", definition: "the right for parents to take time off work to look after a child" },
+            { id: 'b', word: "workplace injuries", gapped: "workp<input maxlength='4' data-id='b' class='gapped-input' style='width: 9ch;'> inj<input maxlength='4' data-id='b' class='gapped-input' style='width: 9ch;'>es", definition: "accidents that happen at work" },
+            { id: 'a', word: "short-time working", gapped: "s<input maxlength='3' data-id='a' class='gapped-input' style='width: 7ch;'>ort-t<input maxlength='2' data-id='a' class='gapped-input' style='width: 5ch;'>me w<input maxlength='3' data-id='a' class='gapped-input' style='width: 7ch;'>king", definition: "reduced working hours, usually when a company has a decrease in production" },
+            { id: 'g', word: "disciplinary and grievance procedure", gapped: "disc<input maxlength='7' data-id='g' class='gapped-input' style='width: 15ch;'>y and gr<input maxlength='4' data-id='g' class='gapped-input' style='width: 9ch;'>van<input maxlength='1' data-id='g' class='gapped-input' style='width: 3ch;'>e procedure", definition: "procedure when an employee breaks the rules and what the employee can do if unhappy with a decision" },
+            { id: 'f', word: "work-related stress", gapped: "w<input maxlength='2' data-id='f' class='gapped-input' style='width: 5ch;'>k-re<input maxlength='2' data-id='f' class='gapped-input' style='width: 5ch;'>ted st<input maxlength='3' data-id='f' class='gapped-input' style='width: 7ch;'>ess", definition: "stress caused by negative factors in the job" }
         ];
         
         let wordsState = {};
@@ -380,13 +532,20 @@
         let selectedPartnershipDef = null;
         let partnershipCorrectMatches = 0;
 
+        function destroyPartnerships() {
+            document.getElementById('partnerships-container').innerHTML = '';
+            document.getElementById('partnership-definitions-container').innerHTML = '';
+            wordsState = {};
+            selectedPartnership = null;
+            selectedPartnershipDef = null;
+            partnershipCorrectMatches = 0;
+        }
+
         function initPartnerships() {
+            destroyPartnerships();
             const wordsContainer = document.getElementById('partnerships-container');
             const defsContainer = document.getElementById('partnership-definitions-container');
-            wordsContainer.innerHTML = '';
-            defsContainer.innerHTML = '';
             
-            wordsState = {};
             partnershipData.forEach(p => {
                 wordsState[p.id] = { spelledCorrectly: false, matched: false };
             });
@@ -409,13 +568,14 @@
                 input.addEventListener('input', (e) => checkSpelling(e.target.dataset.id));
             });
             
-            partnershipCorrectMatches = 0;
             updatePartnershipFeedback();
         }
 
         function checkSpelling(id) {
             const wordData = partnershipData.find(p => p.id === id);
             const container = document.getElementById(`partnership-${id}`);
+            if (!container || !wordData) return;
+
             const inputs = container.querySelectorAll(`input[data-id="${id}"]`);
             
             let filledWord = wordData.gapped;
@@ -434,7 +594,7 @@
         }
         
         function selectPartnership(id) {
-            if (wordsState[id].matched) return;
+            if (!wordsState[id] || wordsState[id].matched) return;
             if (!wordsState[id].spelledCorrectly) {
                 const feedbackEl = document.getElementById('partnership-feedback');
                 feedbackEl.textContent = "Please spell the word correctly before matching!";
@@ -453,7 +613,8 @@
         }
 
         function selectPartnershipDef(id) {
-            if (wordsState[id].matched) return;
+            const partnership = partnershipData.find(p => p.id === id);
+            if (!partnership || (wordsState[id] && wordsState[id].matched)) return;
             selectedPartnershipDef = id;
             document.querySelectorAll('.definition-item').forEach(el => el.classList.remove('selected'));
             document.getElementById(`partnership-def-${id}`).classList.add('selected');
@@ -496,10 +657,6 @@
              }
         }
 
-        function resetPartnerships() {
-            initPartnerships();
-        }
-
         // --- Activity 2: Listening Quiz (T/F) ---
         const listeningQuizData = [
             { statement: "Marion will be working flexitime in her new job.", answer: false },
@@ -510,9 +667,13 @@
             { statement: "She will receive the offer letter in two weeks.", answer: false }
         ];
 
+        function destroyListeningQuiz() {
+            document.getElementById('listening-quiz-container').innerHTML = '';
+        }
+
         function initListeningActivity() {
+            destroyListeningQuiz();
             const container = document.getElementById('listening-quiz-container');
-            container.innerHTML = '';
             listeningQuizData.forEach((item, index) => {
                 container.innerHTML += `
                     <div id="listen-q-${index}" class="p-4 border border-gray-200 rounded-lg">
@@ -567,10 +728,14 @@
             { sentence: "We'll be t{} up references with your previous and present employer.", answers: ["aking"] },
             { sentence: "We'll make the offer of employment 's{} to satisfactory reference'.", answers: ["ubject"] }
         ];
+        
+        function destroyListeningFill() {
+            document.getElementById('listening-fill-container').innerHTML = '';
+        }
 
         function initListeningFill() {
+            destroyListeningFill();
             const container = document.getElementById('listening-fill-container');
-            container.innerHTML = '';
             let inputCounter = 0;
             listeningFillData.forEach((item, index) => {
                 let sentenceHtml = item.sentence;
@@ -620,11 +785,18 @@
         let selectedSentenceEnd = null;
         let sentenceCorrectMatches = 0;
 
+        function destroySentenceMatching() {
+            document.getElementById('sentence-starts-container').innerHTML = '';
+            document.getElementById('sentence-ends-container').innerHTML = '';
+            selectedSentenceStart = null;
+            selectedSentenceEnd = null;
+            sentenceCorrectMatches = 0;
+        }
+
         function initSentenceMatching() {
+            destroySentenceMatching();
             const startsContainer = document.getElementById('sentence-starts-container');
             const endsContainer = document.getElementById('sentence-ends-container');
-            startsContainer.innerHTML = '';
-            endsContainer.innerHTML = '';
 
             const starts = shuffle(sentenceMatchingData.map(item => ({ id: item.id, text: item.start })));
             const ends = shuffle(sentenceMatchingData.map(item => ({ id: item.id, text: item.end })));
@@ -637,7 +809,6 @@
                 endsContainer.innerHTML += `<div id="sentence-end-${item.id}" class="sentence-half p-3 bg-gray-100 rounded-lg" onclick="selectSentenceEnd('${item.id}')">${item.text}</div>`;
             });
             
-            sentenceCorrectMatches = 0;
             updateSentenceMatchFeedback();
         }
 
@@ -678,6 +849,8 @@
                     endEl.classList.remove('selected');
                     startEl.classList.add('correct');
                     endEl.classList.add('correct');
+                    startEl.onclick = null;
+                    endEl.onclick = null;
                     sentenceCorrectMatches++;
                     updateSentenceMatchFeedback();
                 } else {
@@ -693,89 +866,372 @@
                 selectedSentenceEnd = null;
             }
         }
+        
+        // --- Activity 5: Category Sort ---
+        const sortableWords = [
+            { text: 'shift work', category: 'working-time' },
+            { text: 'notice period', category: 'ending-employment' },
+            { text: 'annual leave', category: 'absence' },
+            { text: 'part-time employment', category: 'working-time' },
+            { text: 'trial period', category: 'employment-status' },
+            { text: 'core time', category: 'working-time' },
+            { text: 'sick leave', category: 'absence' },
+            { text: 'public holiday', category: 'absence' },
+            { text: 'resignation', category: 'ending-employment' },
+            { text: 'vacation', category: 'absence' },
+            { text: 'dismissal', category: 'ending-employment' },
+            { text: 'fixed-term contract', category: 'employment-status' },
+            { text: 'six-day week', category: 'working-time' },
+            { text: 'redundancy', category: 'ending-employment' },
+            { text: 'temporary employment', category: 'employment-status' },
+            { text: 'flexitime', category: 'working-time' },
+            { text: 'probationary period', category: 'employment-status' },
+            { text: 'holiday entitlement', category: 'absence' }
+        ];
 
-        function resetSentenceMatching() {
-            initSentenceMatching();
+        function destroyCategorySort() {
+            document.getElementById('sort-items-pool').innerHTML = '';
+            document.querySelectorAll('.drop-zone').forEach(zone => {
+                zone.innerHTML = '';
+                zone.classList.remove('drag-over');
+            });
         }
 
-        // --- Activity 5: Crossword ---
-        function initCrossword() {
-            const container = document.getElementById('crossword-container');
-            container.innerHTML = ''; // Clear previous grid
-            const grid = document.createElement('div');
-            grid.className = 'crossword-grid';
-            
-            const cells = [
-                // 6A
-                {r:5, c:0, a:'P', num: 6}, {r:5, c:1, a:'E'}, {r:5, c:2, a:'R'}, {r:5, c:3, a:'M'}, {r:5, c:4, a:'A'}, {r:5, c:5, a:'N'}, {r:5, c:6, a:'E'}, {r:5, c:7, a:'N'}, {r:5, c:8, a:'T'},
-                // 7A
-                {r:6, c:2, a:'P', num: 7}, {r:6, c:3, a:'R'}, {r:6, c:4, a:'O'}, {r:6, c:5, a:'C'}, {r:6, c:6, a:'E'}, {r:6, c:7, a:'D'}, {r:6, c:8, a:'U'}, {r:6, c:9, a:'R'}, {r:6, c:10, a:'E'},
-                // 8A
-                {r:7, c:4, a:'I', num: 8}, {r:7, c:5, a:'N'}, {r:7, c:6, a:'S'}, {r:7, c:7, a:'T'}, {r:7, c:8, a:'E'}, {r:7, c:9, a:'A'}, {r:7, c:10, a:'D'},
-                // 9A
-                {r:8, c:2, a:'C', num: 9}, {r:8, c:3, a:'L'}, {r:8, c:4, a:'E'}, {r:8, c:5, a:'A'}, {r:8, c:6, a:'R'},
-                // 1D
-                {r:0, c:4, a:'R', num: 1}, {r:1, c:4, a:'E'}, {r:2, c:4, a:'F'}, {r:3, c:4, a:'E'}, {r:4, c:4, a:'R'}, {r:5, c:4, a:'E'}, {r:6, c:4, a:'E'}, {r:7, c:4, a:'S'},
-                // 2D
-                {r:1, c:6, a:'S', num: 2}, {r:2, c:6, a:'T'}, {r:3, c:6, a:'I'}, {r:4, c:6, a:'C'}, {r:5, c:6, a:'K'}, {r:6, c:6, a:'T'}, {r:7, c:6, a:'O'},
-                // 3D
-                {r:1, c:8, a:'C', num: 3}, {r:2, c:8, a:'O'}, {r:3, c:8, a:'N'}, {r:4, c:8, a:'T'}, {r:5, c:8, a:'R'}, {r:6, c:8, a:'A'}, {r:7, c:8, a:'C'}, {r:8, c:8, a:'T'},
-                // 4D
-                {r:2, c:0, a:'O', num: 4}, {r:3, c:0, a:'F'}, {r:4, c:0, a:'F'}, {r:5, c:0, a:'E'}, {r:6, c:0, a:'R'},
-                // 5D
-                {r:3, c:2, a:'R', num: 5}, {r:4, c:2, a:'E'}, {r:5, c:2, a:'F'}, {r:6, c:2, a:'E'}, {r:7, c:2, a:'R'}, {r:8, c:2, a:'E'}, {r:9, c:2, a:'N'}, {r:10, c:2, a:'C'}, {r:11, c:2, a:'E'},
-            ];
-            
-            const gridCells = Array(10 * 11).fill(null);
-            
-            cells.forEach(cell => {
-                gridCells[cell.r * 11 + cell.c] = cell;
+        function initCategorySort() {
+            destroyCategorySort();
+            const pool = document.getElementById('sort-items-pool');
+            const shuffledWords = shuffle([...sortableWords]);
+            shuffledWords.forEach((word, index) => {
+                const item = document.createElement('div');
+                item.id = `sortable-${index}`;
+                item.className = 'sortable-item';
+                item.textContent = word.text;
+                item.draggable = true;
+                item.dataset.category = word.category;
+                item.addEventListener('dragstart', e => {
+                    e.dataTransfer.setData('text/plain', e.target.id);
+                });
+                pool.appendChild(item);
             });
 
-            for(let i=0; i < gridCells.length; i++) {
-                const cellData = gridCells[i];
-                if(cellData) {
-                    const cellContainer = document.createElement('div');
-                    cellContainer.className = 'crossword-cell-container';
-                    const input = document.createElement('input');
-                    input.type = 'text';
-                    input.maxLength = 1;
-                    input.className = 'crossword-cell';
-                    input.dataset.answer = cellData.a;
-                    
-                    if(cellData.num) {
-                        const numSpan = document.createElement('span');
-                        numSpan.className = 'clue-number';
-                        numSpan.textContent = cellData.num;
-                        cellContainer.appendChild(numSpan);
+            const dropZones = document.querySelectorAll('.drop-zone');
+            dropZones.forEach(zone => {
+                zone.addEventListener('dragover', e => {
+                    e.preventDefault();
+                    zone.classList.add('drag-over');
+                });
+                zone.addEventListener('dragleave', () => {
+                    zone.classList.remove('drag-over');
+                });
+                zone.addEventListener('drop', e => {
+                    e.preventDefault();
+                    zone.classList.remove('drag-over');
+                    const id = e.dataTransfer.getData('text');
+                    const draggableElement = document.getElementById(id);
+                    zone.appendChild(draggableElement);
+                });
+            });
+        }
+
+        function checkCategorySort() {
+            const dropZones = document.querySelectorAll('.drop-zone');
+            dropZones.forEach(zone => {
+                const items = zone.querySelectorAll('.sortable-item');
+                items.forEach(item => {
+                    if (item.dataset.category === zone.dataset.category) {
+                        item.style.backgroundColor = '#c6f6d5'; // Correct
+                    } else {
+                        item.style.backgroundColor = '#fed7d7'; // Incorrect
                     }
-                    
-                    cellContainer.appendChild(input);
-                    grid.appendChild(cellContainer);
-                } else {
-                    const emptyCell = document.createElement('div');
-                    emptyCell.className = 'crossword-cell empty';
-                    grid.appendChild(emptyCell);
+                });
+            });
+        }
+
+        // --- Activity 6: Word Families ---
+        const wordFamiliesData = [
+            { sentence: "We have a very ______ system in the company for our staff who need time off work for childcare.", answer: "flexible" },
+            { sentence: "We've been operating ______ in the company since the early 90s.", answer: "flexitime" },
+            { sentence: "There is little or no ______ for our staff in terms of hours of work as they have to be around when our customers need them.", answer: "flexibility" },
+            { sentence: "Unfortunately, our managing director is very ______ when it comes to deadlines.", answer: "inflexible" }
+        ];
+
+        function destroyWordFamilies() {
+            const container = document.getElementById('word-families-container');
+            if (container) container.innerHTML = '';
+        }
+
+        function initWordFamilies() {
+            destroyWordFamilies();
+            const container = document.getElementById('word-families-container');
+            if (!container) return;
+            wordFamiliesData.forEach((item, index) => {
+                const sentenceHtml = item.sentence.replace('______', `<input type="text" id="wf-gap-${index}" class="mx-2 align-middle">`);
+                container.innerHTML += `
+                    <div class="p-3 bg-gray-50 rounded-lg">
+                        <p>${index + 1}. ${sentenceHtml}</p>
+                        <div id="wf-feedback-${index}" class="feedback text-sm mt-1 ml-6"></div>
+                    </div>
+                `;
+            });
+        }
+
+        function checkWordFamilies() {
+            wordFamiliesData.forEach((item, index) => {
+                const inputEl = document.getElementById(`wf-gap-${index}`);
+                const feedbackEl = document.getElementById(`wf-feedback-${index}`);
+                if (inputEl && feedbackEl) {
+                    const userAnswer = inputEl.value.trim().toLowerCase();
+                    const correctAnswer = item.answer.toLowerCase();
+                    if (userAnswer === correctAnswer) {
+                        feedbackEl.textContent = "Correct!";
+                        feedbackEl.className = 'feedback text-sm mt-1 ml-6 correct';
+                        inputEl.style.borderColor = '#38a169';
+                        inputEl.style.backgroundColor = '#c6f6d5';
+                    } else {
+                        feedbackEl.textContent = `Not quite. The correct answer is "${item.answer}".`;
+                        feedbackEl.className = 'feedback text-sm mt-1 ml-6 incorrect';
+                        inputEl.style.borderColor = '#c53030';
+                        inputEl.style.backgroundColor = '#fed7d7';
+                    }
                 }
+            });
+        }
+
+        // --- Activity 7: Contract Matching ---
+        const contractMatchingData = [
+            { id: 'e', point: 'date the employment begins', extract: 'Your employment begins on 1 January 20...' },
+            { id: 'c', point: 'rate of pay and when/how paid', extract: 'Your basic salary will be £35,000 per annum, payable monthly in arrears by credit transfer to your bank or building society.' },
+            { id: 'h', point: 'normal hours of work/overtime/shift patterns', extract: 'Normal hours of work are 37 1/2 per week, 9 am to 5.30 pm Monday to Friday, with one unpaid hour for lunch each day.' },
+            { id: 'g', point: 'holiday entitlement (including public holidays)', extract: 'You may be required to work on a public holiday. If so, you are entitled to time off in lieu.' },
+            { id: 'j', point: 'job title (or a brief description of the job)', extract: 'Your current job title and responsibilities are detailed in Schedule 1 and may be amended from time to time.' },
+            { id: 'd', point: 'location of workplace', extract: 'Your normal place of work will be the above address. From time to time the company may require you to work at other sites on a temporary basis.' },
+            { id: 'a', point: 'notice period', extract: 'The amount of notice you are required to give or be given by your employer in the first four years is four weeks.' },
+            { id: 'i', point: 'sick pay provision', extract: 'You must inform the office by 10 am on the first day of absence. Failure to do so may render you subject to disciplinary action and may also bar you from sick pay.' },
+            { id: 'f', point: 'pension scheme terms', extract: 'The company does not offer a pension scheme but provides access to a stakeholder pension. Details can be obtained from the personnel department.' },
+            { id: 'b', point: 'disciplinary rules and grievance procedure', extract: 'A copy of the company\'s disciplinary procedure is attached to this contract and employees are asked to read it carefully.' }
+        ];
+
+        let selectedContractPoint = null;
+        let selectedContractExtract = null;
+        let contractCorrectMatches = 0;
+
+        function destroyContractMatching() {
+            document.getElementById('contract-points-container').innerHTML = '';
+            document.getElementById('contract-extracts-container').innerHTML = '';
+            selectedContractPoint = null;
+            selectedContractExtract = null;
+            contractCorrectMatches = 0;
+        }
+
+        function initContractMatching() {
+            destroyContractMatching();
+            const pointsContainer = document.getElementById('contract-points-container');
+            const extractsContainer = document.getElementById('contract-extracts-container');
+
+            const points = shuffle(contractMatchingData.map(item => ({ id: item.id, text: item.point })));
+            const extracts = shuffle(contractMatchingData.map(item => ({ id: item.id, text: item.extract })));
+
+            points.forEach((item, index) => {
+                pointsContainer.innerHTML += `<div id="contract-point-${item.id}" class="matching-item p-3 bg-gray-100 rounded-lg" onclick="selectContractPoint('${item.id}')">${index+1}. ${item.text}</div>`;
+            });
+
+            extracts.forEach(item => {
+                extractsContainer.innerHTML += `<div id="contract-extract-${item.id}" class="matching-item p-3 bg-blue-50 rounded-lg" onclick="selectContractExtract('${item.id}')">${item.text}</div>`;
+            });
+
+            updateContractMatchFeedback();
+        }
+
+        function selectContractPoint(id) {
+            if (document.getElementById(`contract-point-${id}`).classList.contains('correct')) return;
+            selectedContractPoint = id;
+            document.querySelectorAll('#contract-points-container .matching-item').forEach(el => el.classList.remove('selected'));
+            document.getElementById(`contract-point-${id}`).classList.add('selected');
+            checkContractMatch();
+        }
+
+        function selectContractExtract(id) {
+            if (document.getElementById(`contract-extract-${id}`).classList.contains('correct')) return;
+            selectedContractExtract = id;
+            document.querySelectorAll('#contract-extracts-container .matching-item').forEach(el => el.classList.remove('selected'));
+            document.getElementById(`contract-extract-${id}`).classList.add('selected');
+            checkContractMatch();
+        }
+
+        function updateContractMatchFeedback() {
+            const feedbackEl = document.getElementById('contract-matching-feedback');
+            feedbackEl.textContent = `Correct Matches: ${contractCorrectMatches} / ${contractMatchingData.length}`;
+            if (contractCorrectMatches === contractMatchingData.length) {
+                feedbackEl.textContent = "Excellent! You have matched all the points correctly.";
+                feedbackEl.classList.add('correct');
+            } else {
+                feedbackEl.classList.remove('correct');
             }
-            container.appendChild(grid);
+        }
+
+        function checkContractMatch() {
+            if (selectedContractPoint !== null && selectedContractExtract !== null) {
+                const pointEl = document.getElementById(`contract-point-${selectedContractPoint}`);
+                const extractEl = document.getElementById(`contract-extract-${selectedContractExtract}`);
+
+                if (selectedContractPoint === selectedContractExtract) {
+                    pointEl.classList.remove('selected');
+                    extractEl.classList.remove('selected');
+                    pointEl.classList.add('correct');
+                    extractEl.classList.add('correct');
+                    pointEl.onclick = null;
+                    extractEl.onclick = null;
+                    contractCorrectMatches++;
+                    updateContractMatchFeedback();
+                } else {
+                    pointEl.classList.add('incorrect');
+                    extractEl.classList.add('incorrect');
+                    setTimeout(() => {
+                        pointEl.classList.remove('incorrect', 'selected');
+                        extractEl.classList.remove('incorrect', 'selected');
+                    }, 1000);
+                }
+
+                selectedContractPoint = null;
+                selectedContractExtract = null;
+            }
         }
         
-        function checkCrossword() {
-            const inputs = document.querySelectorAll('#crossword-container .crossword-cell');
-            inputs.forEach(input => {
-                if(!input.dataset.answer) return;
-                if (input.value.toUpperCase() === input.dataset.answer) {
-                    input.style.backgroundColor = '#c6f6d5'; // correct
-                } else if (input.value !== '') {
-                    input.style.backgroundColor = '#fed7d7'; // incorrect
-                } else {
-                    input.style.backgroundColor = 'white';
-                }
+        // --- Activity 8: Complete Sentences ---
+        const completeSentencesData = [
+             { sentence: "Full details of the sick pay scheme ______ in the staff handbook.", answers: ["can be found"] },
+             { sentence: "You ______ to work in another office of the company from time to time.", answers: ["may be required"] },
+             { sentence: "Employees ______ to work overtime as and when needed.", answers: ["are expected"] },
+             { sentence: "Changes to your contract ______ and you will be ______.", answers: ["will be discussed", "notified in writing"] },
+             { sentence: "You ______ four weeks' holiday per annum after completion of six months' probation.", answers: ["are entitled to"] },
+             { sentence: "Your salary is ______ on the last day of each month.", answers: ["payable monthly in arrears"] },
+             { sentence: "Employees ______ to ______ the company of any absence by 10.a.m. on the first day.", answers: ["are asked", "notify"] },
+             { sentence: "You may be ______ if you fail to do this.", answers: ["subject to disciplinary action"] }
+        ];
+
+        function destroyCompleteSentences() {
+            const container = document.getElementById('complete-sentences-container');
+            if (container) container.innerHTML = '';
+        }
+
+        function initCompleteSentences() {
+            destroyCompleteSentences();
+            const container = document.getElementById('complete-sentences-container');
+            let inputCounter = 0;
+            completeSentencesData.forEach((item, index) => {
+                let sentenceHtml = item.sentence.replace(/______/g, () => {
+                    const inputId = `cs-gap-${inputCounter++}`;
+                    return `<input type="text" id="${inputId}" class="mx-2 align-middle" style="width: 200px;">`;
+                });
+                container.innerHTML += `
+                    <div class="p-3 bg-gray-50 rounded-lg">
+                        <p>${index + 1}. ${sentenceHtml}</p>
+                    </div>
+                `;
+            });
+        }
+        
+        function checkCompleteSentences() {
+            let inputCounter = 0;
+            completeSentencesData.forEach(item => {
+                item.answers.forEach(answer => {
+                    const inputEl = document.getElementById(`cs-gap-${inputCounter}`);
+                    if (inputEl) {
+                        const userAnswer = inputEl.value.trim().toLowerCase();
+                        const correctAnswer = answer.toLowerCase();
+                        if (userAnswer === correctAnswer) {
+                            inputEl.style.borderColor = '#38a169';
+                            inputEl.style.backgroundColor = '#c6f6d5';
+                        } else {
+                            inputEl.style.borderColor = '#c53030';
+                            inputEl.style.backgroundColor = '#fed7d7';
+                        }
+                    }
+                    inputCounter++;
+                });
+            });
+        }
+        
+        // --- Activity 9: Letter Sort ---
+        const letterSortingData = [
+            { text: "a) We would like you to start on 1 November 2007...", category: 'offer', order: 4 },
+            { text: "b) Thank you for attending the interview for the above position...", category: 'rejection', order: 2 },
+            { text: "c) Further to your recent interviews, we have pleasure in offering you the position...", category: 'offer', order: 2 },
+            { text: "d) Dear Ms Pelletier", category: 'offer', order: 1 },
+            { text: "e) We appreciate your interest and would like to take this opportunity to wish you every success...", category: 'rejection', order: 5 },
+            { text: "f) Please let us know as soon as possible if you would like to accept...", category: 'offer', order: 5 },
+            { text: "g) Dear Mr Chevalier", category: 'rejection', order: 1 },
+            { text: "h) We have now fully considered your application and regret we are unable to offer you a second interview...", category: 'rejection', order: 3 },
+            { text: "i) Basic hours of work are normally 9 a.m. to 6 p.m. ...", category: 'offer', order: 3 },
+            { text: "j) We will hold your details pending and let you know if a suitable opening occurs...", category: 'rejection', order: 4 }
+        ];
+
+        function destroyLetterSort() {
+            document.getElementById('letter-items-pool').innerHTML = '';
+            document.querySelectorAll('#activity-9 .drop-zone').forEach(zone => {
+                zone.innerHTML = '';
+                zone.classList.remove('drag-over');
             });
         }
 
-        // --- Activity 6: Vocabulary Match ---
+        function initLetterSort() {
+            destroyLetterSort();
+            const pool = document.getElementById('letter-items-pool');
+            const shuffledItems = shuffle([...letterSortingData]);
+            shuffledItems.forEach((item, index) => {
+                const el = document.createElement('div');
+                el.id = `letter-item-${index}`;
+                el.className = 'sortable-item';
+                el.textContent = item.text;
+                el.draggable = true;
+                el.dataset.category = item.category;
+                el.dataset.order = item.order;
+                el.addEventListener('dragstart', e => {
+                    e.dataTransfer.setData('text/plain', e.target.id);
+                });
+                pool.appendChild(el);
+            });
+
+            const dropZones = document.querySelectorAll('#activity-9 .drop-zone');
+            dropZones.forEach(zone => {
+                zone.addEventListener('dragover', e => {
+                    e.preventDefault();
+                    zone.classList.add('drag-over');
+                });
+                zone.addEventListener('dragleave', () => {
+                    zone.classList.remove('drag-over');
+                });
+                zone.addEventListener('drop', e => {
+                    e.preventDefault();
+                    zone.classList.remove('drag-over');
+                    const id = e.dataTransfer.getData('text');
+                    const draggableElement = document.getElementById(id);
+                    zone.appendChild(draggableElement);
+                });
+            });
+        }
+
+        function checkLetterSort() {
+            const dropZones = document.querySelectorAll('#activity-9 .drop-zone');
+            dropZones.forEach(zone => {
+                const items = zone.querySelectorAll('.sortable-item');
+                let expectedOrder = 1;
+                items.forEach(item => {
+                    const isCategoryCorrect = item.dataset.category === zone.dataset.category;
+                    const isOrderCorrect = parseInt(item.dataset.order) === expectedOrder;
+
+                    if (isCategoryCorrect && isOrderCorrect) {
+                        item.style.backgroundColor = '#c6f6d5'; // Correct
+                    } else {
+                        item.style.backgroundColor = '#fed7d7'; // Incorrect
+                    }
+                    expectedOrder++;
+                });
+            });
+        }
+
+
+        // --- Activity 10: Vocabulary Match ---
         const matchingData = [
             { id: 1, phrase: 'to create rapport', definition: 'to develop a good relationship' },
             { id: 2, phrase: 'to understand their needs', definition: 'to know what they want' },
@@ -791,13 +1247,19 @@
         let selectedDefinition = null;
         let correctMatches = 0;
 
+        function destroyMatchingGame() {
+            document.getElementById('phrases-container').innerHTML = '';
+            document.getElementById('definitions-container').innerHTML = '';
+            selectedPhrase = null;
+            selectedDefinition = null;
+            correctMatches = 0;
+        }
+
         function initMatchingGame() {
+            destroyMatchingGame();
             const phrasesContainer = document.getElementById('phrases-container');
             const definitionsContainer = document.getElementById('definitions-container');
             
-            phrasesContainer.innerHTML = '';
-            definitionsContainer.innerHTML = '';
-
             const phrases = shuffle(matchingData.map(item => ({ id: item.id, text: item.phrase })));
             const definitions = shuffle(matchingData.map(item => ({ id: item.id, text: item.definition })));
 
@@ -809,7 +1271,6 @@
                 definitionsContainer.innerHTML += `<div id="definition-${item.id}" class="matching-item p-3 bg-gray-100 rounded-lg" onclick="selectDefinition(${item.id})">${item.text}</div>`;
             });
             
-            correctMatches = 0;
             updateFeedback();
         }
 
@@ -867,12 +1328,153 @@
                 selectedDefinition = null;
             }
         }
+        
+        // --- Activity 11: Synonym Match ---
+        const synonymMatchingData = [
+            { id: 'c', phrase: 'a <em>commencing</em> salary of ...', word: 'starting' },
+            { id: 'e', phrase: 'the offer is <em>conditional on</em> receiving ...', word: 'subject to' },
+            { id: 'h', phrase: '<em>probationary</em> period', word: 'trial' },
+            { id: 'a', phrase: '<em>accompanying</em> details', word: 'enclosed' },
+            { id: 'd', phrase: 'per <em>annum</em>', word: 'year' },
+            { id: 'f', phrase: 'are <em>detailed</em> in ...', word: 'set out' },
+            { id: 'b', phrase: 'to <em>familiarize</em>', word: 'learn about' },
+            { id: 'g', phrase: 'We will hold your details <em>pending</em> ...', word: 'until we have something available' }
+        ];
 
-        function resetMatching() {
-            initMatchingGame();
+        let selectedSynonymPhrase = null;
+        let selectedSynonymWord = null;
+        let synonymCorrectMatches = 0;
+        
+        function destroySynonymMatch() {
+            document.getElementById('synonym-phrases-container').innerHTML = '';
+            document.getElementById('synonym-words-container').innerHTML = '';
+            selectedSynonymPhrase = null;
+            selectedSynonymWord = null;
+            synonymCorrectMatches = 0;
         }
 
-        // --- Activity 6: True or False ---
+        function initSynonymMatch() {
+            destroySynonymMatch();
+            const phrasesContainer = document.getElementById('synonym-phrases-container');
+            const wordsContainer = document.getElementById('synonym-words-container');
+
+            const phrases = shuffle(synonymMatchingData.map(item => ({ id: item.id, text: item.phrase })));
+            const words = shuffle(synonymMatchingData.map(item => ({ id: item.id, text: item.word })));
+
+            phrases.forEach(item => {
+                phrasesContainer.innerHTML += `<div id="synonym-phrase-${item.id}" class="matching-item p-3 bg-gray-100 rounded-lg" onclick="selectSynonymPhrase('${item.id}')">${item.text}</div>`;
+            });
+
+            words.forEach(item => {
+                wordsContainer.innerHTML += `<div id="synonym-word-${item.id}" class="matching-item p-3 bg-blue-50 rounded-lg" onclick="selectSynonymWord('${item.id}')">${item.text}</div>`;
+            });
+            
+            updateSynonymMatchFeedback();
+        }
+        
+        function selectSynonymPhrase(id) {
+            if (document.getElementById(`synonym-phrase-${id}`).classList.contains('correct')) return;
+            selectedSynonymPhrase = id;
+            document.querySelectorAll('#synonym-phrases-container .matching-item').forEach(el => el.classList.remove('selected'));
+            document.getElementById(`synonym-phrase-${id}`).classList.add('selected');
+            checkSynonymMatch();
+        }
+
+        function selectSynonymWord(id) {
+            if (document.getElementById(`synonym-word-${id}`).classList.contains('correct')) return;
+            selectedSynonymWord = id;
+            document.querySelectorAll('#synonym-words-container .matching-item').forEach(el => el.classList.remove('selected'));
+            document.getElementById(`synonym-word-${id}`).classList.add('selected');
+            checkSynonymMatch();
+        }
+        
+        function updateSynonymMatchFeedback() {
+             const feedbackEl = document.getElementById('synonym-matching-feedback');
+             feedbackEl.textContent = `Correct Matches: ${synonymCorrectMatches} / ${synonymMatchingData.length}`;
+             if (synonymCorrectMatches === synonymMatchingData.length) {
+                feedbackEl.textContent = "Great job! You've matched all the synonyms!";
+                feedbackEl.classList.add('correct');
+             } else {
+                feedbackEl.classList.remove('correct');
+             }
+        }
+        
+        function checkSynonymMatch() {
+            if (selectedSynonymPhrase !== null && selectedSynonymWord !== null) {
+                const phraseEl = document.getElementById(`synonym-phrase-${selectedSynonymPhrase}`);
+                const wordEl = document.getElementById(`synonym-word-${selectedSynonymWord}`);
+
+                if (selectedSynonymPhrase === selectedSynonymWord) {
+                    phraseEl.classList.remove('selected');
+                    wordEl.classList.remove('selected');
+                    phraseEl.classList.add('correct');
+                    wordEl.classList.add('correct');
+                    phraseEl.onclick = null;
+                    wordEl.onclick = null;
+                    synonymCorrectMatches++;
+                    updateSynonymMatchFeedback();
+                } else {
+                    phraseEl.classList.add('incorrect');
+                    wordEl.classList.add('incorrect');
+                    setTimeout(() => {
+                        phraseEl.classList.remove('incorrect', 'selected');
+                        wordEl.classList.remove('incorrect', 'selected');
+                    }, 1000);
+                }
+                
+                selectedSynonymPhrase = null;
+                selectedSynonymWord = null;
+            }
+        }
+        
+        // --- Activity 12: Dealing with Grievances ---
+        const grievancesData = [
+            { number: 1, answer: 'occur' }, { number: 7, answer: 'disciplinary' },
+            { number: 2, answer: 'conditions' }, { number: 8, answer: 'representative' },
+            { number: 3, answer: 'safety' }, { number: 9, answer: 'policy' },
+            { number: 4, answer: 'entitled' }, { number: 10, answer: 'behaviour' },
+            { number: 5, answer: 'entitlement' }, { number: 6, answer: 'breaking' }
+        ];
+
+        function destroyGrievances() {
+            const container = document.getElementById('grievances-container');
+            if (container) container.innerHTML = '';
+        }
+
+        function initGrievances() {
+            destroyGrievances();
+            const container = document.getElementById('grievances-container');
+            const text = `Problems can ______<span class="text-sm font-bold">(1)</span> in the best run companies for many reasons, such as over terms and ______<span class="text-sm font-bold">(2)</span>, management decisions, discrimination (on grounds of race, sex, disability, and religion), sexual harassment, bullying, health, and ______<span class="text-sm font-bold">(3)</span> issues.
+            <br><br>
+            Within two months of starting a job, employees are ______<span class="text-sm font-bold">(4)</span> to a written statement setting down the main conditions of their employment. As well as information on pay, hours, holiday ______<span class="text-sm font-bold">(5)</span>, and notice periods, the statement must also cover what the company will do if they have to discipline an employee for ______<span class="text-sm font-bold">(6)</span> the rules (the warning procedure) and who the employee can apply to if they are dissatisfied with a ______<span class="text-sm font-bold">(7)</span> decision. All employees have the right to be accompanied by another employee or a union ______<span class="text-sm font-bold">(8)</span> (if applicable) at any disciplinary interview.
+            <br><br>
+            A disciplinary procedure would normally be used when an employee does not follow company ______<span class="text-sm font-bold">(9)</span>, breaks rules, or displays inappropriate workplace behaviour. Employees must be fully informed of their inappropriate ______<span class="text-sm font-bold">(10)</span> and given an opportunity to explain themselves. The procedure should be handled in a private and respectful manner and the employee's previous record should be taken into account.`;
+
+            let currentInput = 0;
+            const gappedText = text.replace(/______/g, () => {
+                currentInput++;
+                return `<input type="text" id="grievance-gap-${currentInput}" class="mx-2 align-middle" style="width: 120px;">`;
+            });
+            container.innerHTML = `<p>${gappedText}</p>`;
+        }
+
+        function checkGrievances() {
+            grievancesData.forEach(item => {
+                const inputEl = document.getElementById(`grievance-gap-${item.number}`);
+                if (inputEl) {
+                    if (inputEl.value.trim().toLowerCase() === item.answer.toLowerCase()) {
+                        inputEl.style.borderColor = '#38a169';
+                        inputEl.style.backgroundColor = '#c6f6d5';
+                    } else {
+                        inputEl.style.borderColor = '#c53030';
+                        inputEl.style.backgroundColor = '#fed7d7';
+                    }
+                }
+            });
+        }
+
+
+        // --- Activity 13: True or False ---
         const trueFalseData = [
             { statement: "Melanie has applied for a position as Call Centre Assistant.", answer: false, explanation: "She applied for a Team Leader position." },
             { statement: "She sent a CV with her letter of application.", answer: true, explanation: "" },
@@ -883,9 +1485,13 @@
             { statement: "Melanie has to call Madrid to arrange the interview.", answer: false, explanation: "She has to call the London office." }
         ];
 
+        function destroyTrueFalse() {
+            document.getElementById('true-false-container').innerHTML = '';
+        }
+
         function initTrueFalse() {
+            destroyTrueFalse();
             const container = document.getElementById('true-false-container');
-            container.innerHTML = '';
             trueFalseData.forEach((item, index) => {
                 container.innerHTML += `
                     <div id="tf-q-${index}" class="p-4 border border-gray-200 rounded-lg">
@@ -931,7 +1537,7 @@
             });
         }
 
-        // --- Activity 7: Fill the Gaps ---
+        // --- Activity 14: Fill the Gaps ---
         const fillGapsData = [
             { sentence: "My best marketing assistant has ______. She's got herself another job with more money!", answer: "resigned" },
             { sentence: "Will we be able to ______ a replacement when John hands in his resignation?", answer: "take on" },
@@ -941,9 +1547,13 @@
             { sentence: "A new directive from head office has been introduced that all employees over 63 will be ______.", answer: "offered early retirement" }
         ];
 
+        function destroyFillGaps() {
+            document.getElementById('fill-gaps-container').innerHTML = '';
+        }
+
         function initFillGaps() {
+            destroyFillGaps();
             const container = document.getElementById('fill-gaps-container');
-            container.innerHTML = '';
             fillGapsData.forEach((item, index) => {
                 const sentenceHtml = item.sentence.replace('______', `<input type="text" id="gap-${index}" class="mx-2 align-middle">`);
                 container.innerHTML += `
@@ -979,13 +1589,7 @@
 
         // --- Initial Load ---
         window.onload = () => {
-            initPartnerships();
-            initListeningActivity();
-            initSentenceMatching();
-            initCrossword();
-            initMatchingGame();
-            initTrueFalse();
-            initFillGaps();
+            // Only the home page is visible initially. Activities are initialized on demand.
         };
     </script>
 </body>
