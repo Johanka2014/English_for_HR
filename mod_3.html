@@ -123,7 +123,7 @@
             width: 100%;
             margin-top: 1rem;
         }
-        /* Category Sort & Letter Sort Styles */
+        /* Category Sort, Letter Sort & Stress Factor Sort Styles */
         .sortable-item {
             cursor: grab;
             padding: 0.75rem;
@@ -180,8 +180,9 @@
         <a id="nav-11" class="nav-link" onclick="showActivity(11)">12. Synonym Match</a>
         <a id="nav-12" class="nav-link" onclick="showActivity(12)">13. Dealing with Grievances</a>
         <a id="nav-13" class="nav-link" onclick="showActivity(13)">14. Discuss the Article</a>
-        <a id="nav-14" class="nav-link" onclick="showActivity(14)">15. True or False</a>
-        <a id="nav-15" class="nav-link" onclick="showActivity(15)">16. Fill the Gaps</a>
+        <a id="nav-14" class="nav-link" onclick="showActivity(14)">15. HR Headlines</a>
+        <a id="nav-15" class="nav-link" onclick="showActivity(15)">16. Health & Safety</a>
+        <a id="nav-16" class="nav-link" onclick="showActivity(16)">17. Stress Factors</a>
     </nav>
 
     <main id="main-content" class="container mx-auto px-4 sm:px-6 lg:px-8 hidden">
@@ -416,26 +417,78 @@
             </div>
         </div>
 
-        <!-- Activity 14: True or False -->
+        <!-- Activity 14: HR Headlines -->
         <div id="activity-14" class="activity-card hidden">
-            <h2 class="text-2xl font-bold mb-4 text-gray-700">Activity 15: True or False?</h2>
+            <h2 class="text-2xl font-bold mb-4 text-gray-700">Activity 15: HR Headlines</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+                <div>
+                    <img src="https://johanka2014.github.io/English_for_HR/headlines.png" alt="HR Headlines" class="w-full h-auto rounded-xl object-contain">
+                </div>
+                <div class="text-lg">
+                    <p>Here are some headlines from articles on HR issues. What do you think they refer to? Discuss.</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Activity 15: Health & Safety -->
+        <div id="activity-15" class="activity-card hidden">
+            <h2 class="text-2xl font-bold mb-4 text-gray-700">Activity 16: Health & Safety</h2>
+            <p class="mb-6 text-gray-600">Which of the health and safety measures below do you think are typical of a) factories, b) offices or shops, or c) any environment? Drag and drop them into the correct categories.</p>
+            <div class="flex flex-col gap-8">
+                <div class="w-full grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div>
+                        <h3 class="font-bold text-lg mb-2 text-center">a) Factories</h3>
+                        <div class="drop-zone min-h-[200px]" data-category="a"></div>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-lg mb-2 text-center">b) Offices or Shops</h3>
+                        <div class="drop-zone min-h-[200px]" data-category="b"></div>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-lg mb-2 text-center">c) Any Environment</h3>
+                        <div class="drop-zone min-h-[200px]" data-category="c"></div>
+                    </div>
+                </div>
+                <div id="health-safety-pool-container" class="w-full p-4 bg-gray-100 rounded-lg">
+                    <h3 class="font-bold text-lg mb-2 text-center">Health & Safety Measures</h3>
+                    <div id="health-safety-pool" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-2"></div>
+                </div>
+            </div>
+            <div class="text-center mt-8">
+                <button class="btn-primary" onclick="checkHealthSafetySort()">Check Answers</button>
+                <button class="btn-primary bg-gray-500 hover:bg-gray-600" onclick="initHealthSafetySort()">Reset</button>
+            </div>
+        </div>
+
+        <!-- Activity 16: Stress Factors -->
+        <div id="activity-16" class="activity-card hidden">
+            <h2 class="text-2xl font-bold mb-4 text-gray-700">Activity 17: Stress Factors</h2>
+            <p class="mb-6 text-gray-600">Number the following workplace stress factors in order of importance (1 most stressful, 10 least stressful). Compare your results with a partner's.</p>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div id="stress-factors-pool-container" class="md:col-span-1 p-4 bg-gray-100 rounded-lg">
+                    <h3 class="font-bold text-lg mb-2 text-center">Stress Factors</h3>
+                    <div id="stress-factors-pool" class="space-y-2"></div>
+                </div>
+                <div class="md:col-span-2 p-4">
+                     <div class="flex justify-between font-bold text-gray-600 px-2">
+                        <span>Most Stressful</span>
+                        <span>Least Stressful</span>
+                    </div>
+                    <div id="stress-factors-rank-zone" class="drop-zone mt-2 min-h-[400px] flex flex-col gap-2"></div>
+                </div>
+            </div>
+            <div class="text-center mt-6">
+                 <button class="btn-primary bg-gray-500 hover:bg-gray-600" onclick="initStressFactorSort()">Reset</button>
+            </div>
+        </div>
+
+        <!-- Activity 17: True or False -->
+        <div id="activity-17" class="activity-card hidden">
+            <h2 class="text-2xl font-bold mb-4 text-gray-700">Activity 18: True or False?</h2>
             <p class="mb-6 text-gray-600">Read the statements about the letter to Melanie Smith and decide if they are true or false.</p>
             <div id="true-false-container" class="space-y-5"></div>
             <div class="text-center mt-8">
                 <button class="btn-primary" onclick="checkTrueFalse()">Check Answers</button>
-            </div>
-        </div>
-
-        <!-- Activity 15: Fill the Gaps -->
-        <div id="activity-15" class="activity-card hidden">
-            <h2 class="text-2xl font-bold mb-4 text-gray-700">Activity 16: Fill the Gaps</h2>
-            <p class="mb-6 text-gray-600">Complete the sentences with the correct words from the box below.</p>
-            <div class="text-center mb-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
-                <p class="font-semibold text-blue-800">resigned | take on | lay off | made redundant | sacked | offered early retirement</p>
-            </div>
-            <div id="fill-gaps-container" class="space-y-4 text-lg"></div>
-            <div class="text-center mt-8">
-                <button class="btn-primary" onclick="checkFillGaps()">Check Answers</button>
             </div>
         </div>
 
@@ -471,9 +524,10 @@
                 case 10: destroyMatchingGame(); break;
                 case 11: destroySynonymMatch(); break;
                 case 12: destroyGrievances(); break;
-                // No destroy for activity 13 as it's static
-                case 14: destroyTrueFalse(); break;
-                case 15: destroyFillGaps(); break;
+                // No destroy for activities 13 & 14 as they are static
+                case 15: destroyHealthSafetySort(); break;
+                case 16: destroyStressFactorSort(); break;
+                case 17: destroyTrueFalse(); break;
             }
         }
 
@@ -491,9 +545,10 @@
                 case 10: initMatchingGame(); break;
                 case 11: initSynonymMatch(); break;
                 case 12: initGrievances(); break;
-                // No init for activity 13 as it's static
-                case 14: initTrueFalse(); break;
-                case 15: initFillGaps(); break;
+                // No init for activities 13 & 14 as they are static
+                case 15: initHealthSafetySort(); break;
+                case 16: initStressFactorSort(); break;
+                case 17: initTrueFalse(); break;
             }
         }
 
@@ -1474,7 +1529,7 @@
         }
 
 
-        // --- Activity 13: True or False ---
+        // --- Activity 16: True or False ---
         const trueFalseData = [
             { statement: "Melanie has applied for a position as Call Centre Assistant.", answer: false, explanation: "She applied for a Team Leader position." },
             { statement: "She sent a CV with her letter of application.", answer: true, explanation: "" },
@@ -1537,52 +1592,143 @@
             });
         }
 
-        // --- Activity 14: Fill the Gaps ---
-        const fillGapsData = [
-            { sentence: "My best marketing assistant has ______. She's got herself another job with more money!", answer: "resigned" },
-            { sentence: "Will we be able to ______ a replacement when John hands in his resignation?", answer: "take on" },
-            { sentence: "We can't continue working in these freezing temperatures, so we'll have to ______ six workers until the end of February.", answer: "lay off" },
-            { sentence: "Those staff who can't relocate to the new factory in the north when we close down will be ______.", answer: "made redundant" },
-            { sentence: "Fill me in on the details; I believe one of our shop assistants has been ______ for stealing, is that right?", answer: "sacked" },
-            { sentence: "A new directive from head office has been introduced that all employees over 63 will be ______.", answer: "offered early retirement" }
+        // --- Activity 15: Health & Safety ---
+        const healthSafetyData = [
+            { text: 'carry out fire drills', category: 'c' },
+            { text: 'make sure furniture is properly adjusted', category: 'b' },
+            { text: 'prevent exposure to harmful substances', category: 'a' },
+            { text: 'provide eye tests', category: 'b' },
+            { text: 'post safety signs', category: 'a' },
+            { text: 'remove dangerous obstacles', category: 'c' },
+            { text: 'provide safety equipment (hard hats, etc.)', category: 'a' },
+            { text: 'do risk assessments', category: 'c' },
+            { text: 'train first aiders', category: 'c' },
+            { text: 'wear protective clothing', category: 'a' }
         ];
 
-        function destroyFillGaps() {
-            document.getElementById('fill-gaps-container').innerHTML = '';
-        }
-
-        function initFillGaps() {
-            destroyFillGaps();
-            const container = document.getElementById('fill-gaps-container');
-            fillGapsData.forEach((item, index) => {
-                const sentenceHtml = item.sentence.replace('______', `<input type="text" id="gap-${index}" class="mx-2 align-middle">`);
-                container.innerHTML += `
-                    <div class="p-3 bg-gray-50 rounded-lg">
-                        <p>${index + 1}. ${sentenceHtml}</p>
-                        <div id="gap-feedback-${index}" class="feedback text-sm mt-1 ml-6"></div>
-                    </div>
-                `;
+        function destroyHealthSafetySort() {
+            document.getElementById('health-safety-pool').innerHTML = '';
+            document.querySelectorAll('#activity-15 .drop-zone').forEach(zone => {
+                zone.innerHTML = '';
+                zone.classList.remove('drag-over');
             });
         }
 
-        function checkFillGaps() {
-            fillGapsData.forEach((item, index) => {
-                const inputEl = document.getElementById(`gap-${index}`);
-                const feedbackEl = document.getElementById(`gap-feedback-${index}`);
-                const userAnswer = inputEl.value.trim().toLowerCase();
-                const correctAnswer = item.answer.toLowerCase();
+        function initHealthSafetySort() {
+            destroyHealthSafetySort();
+            const pool = document.getElementById('health-safety-pool');
+            const shuffledItems = shuffle([...healthSafetyData]);
+            shuffledItems.forEach((item, index) => {
+                const el = document.createElement('div');
+                el.id = `health-safety-item-${index}`;
+                el.className = 'sortable-item';
+                el.textContent = item.text;
+                el.draggable = true;
+                el.dataset.category = item.category;
+                el.addEventListener('dragstart', e => {
+                    e.dataTransfer.setData('text/plain', e.target.id);
+                });
+                pool.appendChild(el);
+            });
 
-                if (userAnswer === correctAnswer) {
-                    feedbackEl.textContent = "Correct!";
-                    feedbackEl.className = 'feedback text-sm mt-1 ml-6 correct';
-                    inputEl.style.borderColor = '#38a169';
-                    inputEl.style.backgroundColor = '#c6f6d5';
-                } else {
-                    feedbackEl.textContent = `Not quite. The correct answer is "${item.answer}".`;
-                    feedbackEl.className = 'feedback text-sm mt-1 ml-6 incorrect';
-                    inputEl.style.borderColor = '#c53030';
-                    inputEl.style.backgroundColor = '#fed7d7';
-                }
+            const dropZones = document.querySelectorAll('#activity-15 .drop-zone');
+            dropZones.forEach(zone => {
+                zone.addEventListener('dragover', e => {
+                    e.preventDefault();
+                    zone.classList.add('drag-over');
+                });
+                zone.addEventListener('dragleave', () => {
+                    zone.classList.remove('drag-over');
+                });
+                zone.addEventListener('drop', e => {
+                    e.preventDefault();
+                    zone.classList.remove('drag-over');
+                    const id = e.dataTransfer.getData('text');
+                    const draggableElement = document.getElementById(id);
+                    zone.appendChild(draggableElement);
+                });
+            });
+        }
+
+        function checkHealthSafetySort() {
+            const dropZones = document.querySelectorAll('#activity-15 .drop-zone');
+            dropZones.forEach(zone => {
+                const items = zone.querySelectorAll('.sortable-item');
+                items.forEach(item => {
+                    if (item.dataset.category === zone.dataset.category) {
+                        item.style.backgroundColor = '#c6f6d5'; // Correct
+                    } else {
+                        item.style.backgroundColor = '#fed7d7'; // Incorrect
+                    }
+                });
+            });
+        }
+        
+        // --- Activity 16: Stress Factor Sort ---
+        const stressFactorData = [
+            "interpersonal relationships at work (problems with co-workers)",
+            "tight deadlines (pressure to get work done in time)",
+            "intimidation from supervisors",
+            "work environment/equipment (unsatisfactory working conditions)",
+            "workload",
+            "job security (fear of losing one's job)",
+            "working hours",
+            "low autonomy (working under constant supervision)",
+            "repetitive work",
+            "work/life balance (finding time for responsibilities at home)"
+        ];
+
+        function destroyStressFactorSort() {
+            document.getElementById('stress-factors-pool').innerHTML = '';
+            document.getElementById('stress-factors-rank-zone').innerHTML = '';
+        }
+
+        function initStressFactorSort() {
+            destroyStressFactorSort();
+            const pool = document.getElementById('stress-factors-pool');
+            const rankZone = document.getElementById('stress-factors-rank-zone');
+
+            shuffle([...stressFactorData]).forEach((text, index) => {
+                const item = document.createElement('div');
+                item.id = `stress-factor-${index}`;
+                item.className = 'sortable-item';
+                item.textContent = text;
+                item.draggable = true;
+                item.addEventListener('dragstart', e => {
+                    e.dataTransfer.setData('text/plain', e.target.id);
+                });
+                pool.appendChild(item);
+            });
+            
+            [pool, rankZone].forEach(zone => {
+                 zone.addEventListener('dragover', e => {
+                    e.preventDefault();
+                    zone.classList.add('drag-over');
+                });
+                zone.addEventListener('dragleave', () => {
+                    zone.classList.remove('drag-over');
+                });
+                zone.addEventListener('drop', e => {
+                    e.preventDefault();
+                    zone.classList.remove('drag-over');
+                    const id = e.dataTransfer.getData('text');
+                    const draggableElement = document.getElementById(id);
+                    
+                    const dropY = e.clientY;
+                    const itemsInZone = [...zone.querySelectorAll('.sortable-item')];
+                    let placed = false;
+                    for(const item of itemsInZone) {
+                        const rect = item.getBoundingClientRect();
+                        if (dropY < rect.top + rect.height / 2) {
+                            zone.insertBefore(draggableElement, item);
+                            placed = true;
+                            break;
+                        }
+                    }
+                    if (!placed) {
+                        zone.appendChild(draggableElement);
+                    }
+                });
             });
         }
 
@@ -1594,4 +1740,3 @@
     </script>
 </body>
 </html>
-
