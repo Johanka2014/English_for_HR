@@ -64,6 +64,7 @@
                 <button class="nav-btn font-semibold py-2 px-4 rounded-lg transition-colors duration-200" data-target="#activity-3">Activity 3</button>
                 <button class="nav-btn font-semibold py-2 px-4 rounded-lg transition-colors duration-200" data-target="#activity-4">Activity 4</button>
                 <button class="nav-btn font-semibold py-2 px-4 rounded-lg transition-colors duration-200" data-target="#activity-5">Activity 5</button>
+                <button class="nav-btn font-semibold py-2 px-4 rounded-lg transition-colors duration-200" data-target="#activity-6">Activity 6</button>
             </div>
         </nav>
 
@@ -130,9 +131,25 @@
                 </div>
             </section>
 
-            <!-- Activity 5: Discussion & Advice -->
+            <!-- Activity 5: Gap Fill - Dealing with Grievances -->
             <section id="activity-5" class="activity-page activity-card bg-white/80 backdrop-blur-sm rounded-xl shadow-lg p-6 hidden">
-                <h2 class="text-2xl font-semibold mb-4 text-slate-900 text-center">Activity 5: Discussion Topics</h2>
+                <h2 class="text-2xl font-semibold mb-4 text-slate-900 text-center">Activity 5: Dealing with Grievances</h2>
+                <p class="mb-6 text-slate-600 text-center">Read the article and complete the gaps with words from the list.</p>
+                <div id="grievances-word-bank" class="flex flex-wrap justify-center gap-2 mb-6 p-4 bg-blue-50 rounded-lg">
+                    <!-- JS will populate this -->
+                </div>
+                <div id="grievances-text" class="text-lg leading-relaxed max-w-3xl mx-auto text-slate-800">
+                    <!-- JS will populate this -->
+                </div>
+                <div class="mt-8 flex items-center justify-center space-x-4">
+                    <button id="check-grievances-btn" class="bg-blue-600 text-white font-bold py-2 px-6 rounded-lg hover:bg-blue-700 transition-colors">Check Answers</button>
+                    <button id="reset-grievances-btn" class="bg-slate-300 text-slate-800 font-bold py-2 px-6 rounded-lg hover:bg-slate-400 transition-colors">Reset</button>
+                </div>
+            </section>
+
+            <!-- Activity 6: Discussion & Advice -->
+            <section id="activity-6" class="activity-page activity-card bg-white/80 backdrop-blur-sm rounded-xl shadow-lg p-6 hidden">
+                <h2 class="text-2xl font-semibold mb-4 text-slate-900 text-center">Activity 6: Discussion Topics</h2>
                 <p class="mb-6 text-slate-600 text-center">Discuss these questions with a partner or in a group. What is the best advice?</p>
                 <div class="flex flex-col md:flex-row gap-8 items-center">
                     <div class="w-full md:w-1/3">
@@ -207,6 +224,33 @@
                     { id: 2, text: "Amina Joubert, a nurse in a private hospital, was wrongly dismissed, an employment tribunal has ruled. Joubert was found guilty at a disciplinary hearing of putting the hospital's reputation at risk after posting negative remarks about her workplace on a social networking site. The tribunal found that the grounds for dismissal were insufficient and that the hospital had acted unreasonably. Employment law expert, Tony Saporta, believes that companies need clearer policies about social networking. 'This case shows,' he added, 'that some companies do not understand their own disciplinary procedures!'", answer: 'c' },
                     { id: 3, text: "A new survey in the US reveals that checking a job applicant's online presence has become standard procedure in most large companies. The survey concludes with three points of advice for job seekers: (1) Don't post anything which you don't want everyone to see (2) Remember to select your privacy settings (3) Only allow people you know well to join your network: it doesn't matter how many 'friends' you have. 'It's amazing how many people forget who will look at their home page or personal blog. Thousands post photos and videos that can damage their image as serious job-seekers,' the survey noted.", answer: 'd' },
                     { id: 4, text: "International brands are increasingly turning to social networking sites in their bid to interact with their customers. The demographic information they get from visits to their page costs nothing and is invaluable to marketing strategy planners. Sites like Facebook can now offer over 800 million potential customers and advertising can be accurately pinpointed.", answer: 'a' }
+                ]
+            };
+
+            const grievancesData = {
+                words: ["behaviour", "breaking", "conditions", "disciplinary", "entitled", "entitlement", "occur", "policy", "representative", "safety"],
+                text: [
+                    { type: 'text', content: 'Problems can ' },
+                    { type: 'gap', answer: 'occur' },
+                    { type: 'text', content: ' in the best run companies for many reasons, such as over terms and ' },
+                    { type: 'gap', answer: 'conditions' },
+                    { type: 'text', content: ', management decisions, discrimination (on grounds of race, sex, disability, and religion), sexual harassment, bullying, health, and ' },
+                    { type: 'gap', answer: 'safety' },
+                    { type: 'text', content: ' issues. Within two months of starting a job, employees are ' },
+                    { type: 'gap', answer: 'entitled' },
+                    { type: 'text', content: ' to a written statement setting down the main conditions of their employment. As well as information on pay, hours, holiday ' },
+                    { type: 'gap', answer: 'entitlement' },
+                    { type: 'text', content: ', and notice periods, the statement must also cover what the company will do if they have to discipline an employee for ' },
+                    { type: 'gap', answer: 'breaking' },
+                    { type: 'text', content: ' the rules (the warning procedure) and who the employee can apply to if they are dissatisfied with a ' },
+                    { type: 'gap', answer: 'disciplinary' },
+                    { type: 'text', content: ' decision. All employees have the right to be accompanied by another employee or a union ' },
+                    { type: 'gap', answer: 'representative' },
+                    { type: 'text', content: ' (if applicable) at any disciplinary interview. A disciplinary procedure would normally be used when an employee does not follow company ' },
+                    { type: 'gap', answer: 'policy' },
+                    { type: 'text', content: ', breaks rules, or displays inappropriate workplace behaviour. Employees must be fully informed of their inappropriate ' },
+                    { type: 'gap', answer: 'behaviour' },
+                    { type: 'text', content: ' and given an opportunity to explain themselves. The procedure should be handled in a private and respectful manner and the employee\'s previous record should be taken into account.' },
                 ]
             };
 
@@ -386,7 +430,6 @@
 
             function initReadingGame() {
                 readingContainer.innerHTML = '';
-                // Sort articles by ID to ensure they appear in order 1, 2, 3, 4
                 const articlesInOrder = [...readingData.articles].sort((a, b) => a.id - b.id);
                 const shuffledHeadlines = shuffleArray([...readingData.headlines]);
 
@@ -428,6 +471,51 @@
                 });
             });
 
+            // --- ACTIVITY 5: GRIEVANCES GAP FILL ---
+            const grievancesTextContainer = document.getElementById('grievances-text');
+            const grievancesWordBank = document.getElementById('grievances-word-bank');
+            const checkGrievancesBtn = document.getElementById('check-grievances-btn');
+            const resetGrievancesBtn = document.getElementById('reset-grievances-btn');
+
+            function initGrievancesGame() {
+                grievancesTextContainer.innerHTML = '';
+                grievancesWordBank.innerHTML = '';
+
+                const shuffledWords = shuffleArray([...grievancesData.words]);
+                shuffledWords.forEach(word => {
+                    grievancesWordBank.innerHTML += `<span class="bg-white border border-slate-300 rounded px-2 py-1 text-sm font-medium">${word}</span>`;
+                });
+
+                const optionsHtml = shuffledWords.map(word => `<option value="${word}">${word}</option>`).join('');
+                let textHtml = '';
+                let gapCounter = 0;
+                grievancesData.text.forEach(part => {
+                    if (part.type === 'text') {
+                        textHtml += part.content;
+                    } else {
+                        gapCounter++;
+                        textHtml += `<select data-answer="${part.answer}" class="grievance-gap border-b-2 border-slate-300 focus:border-blue-500 outline-none mx-1"><option value="">--- (${gapCounter}) ---</option>${optionsHtml}</select>`;
+                    }
+                });
+                grievancesTextContainer.innerHTML = textHtml;
+            }
+
+            checkGrievancesBtn.addEventListener('click', () => {
+                grievancesTextContainer.querySelectorAll('.grievance-gap').forEach(select => {
+                    const isCorrect = select.value === select.dataset.answer;
+                    select.classList.toggle('bg-green-100', isCorrect);
+                    select.classList.toggle('border-green-500', isCorrect);
+                    select.classList.toggle('bg-red-100', !isCorrect);
+                    select.classList.toggle('border-red-500', !isCorrect);
+                });
+            });
+
+            resetGrievancesBtn.addEventListener('click', () => {
+                grievancesTextContainer.querySelectorAll('.grievance-gap').forEach(select => {
+                    select.value = "";
+                    select.classList.remove('bg-green-100', 'border-green-500', 'bg-red-100', 'border-red-500');
+                });
+            });
 
             // --- INITIALIZE ALL ACTIVITIES ---
             createMatchingGame({
@@ -450,6 +538,7 @@
 
             initGapFill();
             initReadingGame();
+            initGrievancesGame();
         });
     </script>
 </body>
