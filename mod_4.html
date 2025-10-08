@@ -3,276 +3,560 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Interactive HR Development Sorting</title>
+    <title>HR Development - Interactive Activities</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Lora:wght@700&display=swap" rel="stylesheet">
     <style>
-        /* Custom styles for the page */
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #f3f4f6; /* A light gray background for context */
-            display: flex;
-            justify-content: center;
-            align-items: flex-start;
-            min-height: 100vh;
-            padding: 2rem;
+            background: linear-gradient(135deg, #fefce8 0%, #dbeafe 100%);
         }
-        /* Styles for drag and drop */
-        .draggable {
-            cursor: grab;
-            transition: all 0.2s ease;
-            touch-action: none;
+        .activity-card {
+            background: white;
+            border-radius: 1rem;
+            padding: 2rem;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s ease;
+        }
+        .activity-card:hover {
+            transform: translateY(-5px);
+        }
+        .btn-primary {
+            background: linear-gradient(to right, #7c3aed 0%, #4f46e5 100%);
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+        }
+        .btn-primary:hover {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            transform: translateY(-2px);
+        }
+        .btn-start {
+            padding: 1rem 2.5rem;
+            font-size: 1.25rem;
+            border-radius: 50px;
+            background: linear-gradient(to right, #7c3aed, #6d28d9);
+            color: white;
+            font-weight: bold;
+            box-shadow: 0 5px 15px rgba(124, 58, 237, 0.4);
+            transition: all 0.3s ease;
+        }
+        .btn-start:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(124, 58, 237, 0.5);
+        }
+        .nav-link {
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .nav-link.active {
+            background: linear-gradient(to right, #7c3aed 0%, #4f46e5 100%);
+            color: white;
+        }
+        .nav-link:not(.active) {
+            color: #4a5568;
+        }
+        .nav-link:not(.active):hover {
+            background-color: rgba(0,0,0,0.05);
+        }
+        .matching-item, .sortable-item {
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: all 0.2s ease-in-out;
+        }
+        .matching-item.selected, .sortable-item.selected {
+            border-color: #7c3aed;
+            background-color: #f5f3ff;
+        }
+        .matching-item.correct, .sortable-item.correct {
+            background-color: #dcfce7 !important;
+            border-color: #22c55e !important;
+            cursor: default;
+        }
+        .matching-item.incorrect, .sortable-item.incorrect {
+            background-color: #fee2e2 !important;
+            border-color: #ef4444 !important;
+        }
+        .feedback {
+            margin-top: 1rem;
+            font-weight: 600;
+        }
+        .feedback.correct {
+            color: #166534;
+        }
+        .feedback.incorrect {
+            color: #991b1b;
+        }
+        input[type="text"].fill-gap {
+            border-radius: 0.5rem;
+            border: 1px solid #cbd5e0;
+            padding: 0.5rem 0.75rem;
+            width: 150px;
+            transition: border-color 0.2s;
+        }
+        input[type="text"].fill-gap:focus {
+            outline: none;
+            border-color: #7c3aed;
         }
         .drop-zone {
-            min-height: 150px;
-            border: 2px dashed #9CA3AF;
-            transition: border-color 0.2s ease, background-color 0.2s ease;
+            padding: 1rem;
+            border: 2px dashed #9ca3af;
+            border-radius: 0.5rem;
+            background-color: #f9fafb;
+            min-height: 100px;
+            transition: background-color 0.2s, border-color 0.2s;
         }
-        .dragging {
-            opacity: 0.5;
-            transform: scale(1.05);
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-        }
-        .drag-over {
-            background-color: #E0E7FF;
-            border-color: #4F46E5;
-        }
-        .draggable.correct {
-            background-color: #D1FAE5 !important;
-            border-color: #10B981;
-        }
-        .draggable.incorrect {
-            background-color: #FEE2E2 !important;
-            border-color: #EF4444;
-        }
-        /* Custom modal for feedback */
-        .modal-backdrop {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.5);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-        }
-        .modal-content {
-            background: white;
-            padding: 2rem;
-            border-radius: 0.75rem;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-            max-width: 500px;
-            width: 90%;
-            text-align: center;
+        .drop-zone.drag-over {
+            background-color: #ede9fe;
+            border-color: #7c3aed;
         }
     </style>
 </head>
-<body>
+<body class="text-gray-800">
 
-    <!-- Activity: Category Sorting -->
-    <div class="bg-white p-6 rounded-lg shadow-md w-full max-w-6xl">
-        <h2 class="text-2xl font-semibold text-gray-800 mb-2">Sort the Appraisal Goals</h2>
-        <p class="text-gray-600 mb-6">Drag the items from the word bank and drop them into the correct appraisal goal category.</p>
-
-        <!-- Drop Zones -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-            <div data-category="Motivating staff" class="drop-zone bg-gray-50 rounded-lg p-4">
-                <h3 class="font-bold text-lg text-center text-gray-700 mb-4">Motivating staff</h3>
-                <div class="space-y-2"></div>
-            </div>
-            <div data-category="Improving performance" class="drop-zone bg-gray-50 rounded-lg p-4">
-                <h3 class="font-bold text-lg text-center text-gray-700 mb-4">Improving performance</h3>
-                <div class="space-y-2"></div>
-            </div>
-            <div data-category="Encouraging better communication" class="drop-zone bg-gray-50 rounded-lg p-4">
-                <h3 class="font-bold text-lg text-center text-gray-700 mb-4">Encouraging better communication</h3>
-                <div class="space-y-2"></div>
+    <!-- Front Page Section -->
+    <div id="activity-home" class="container mx-auto text-center p-8 flex flex-col items-center justify-center min-h-screen">
+        <div class="w-full max-w-3xl bg-white p-6 rounded-2xl shadow-2xl">
+            <div class="relative w-full pb-[50%] bg-violet-200 rounded-xl flex items-center justify-center">
+                 <h1 class="absolute text-5xl md:text-7xl font-bold text-violet-800" style="font-family: 'Lora', serif;">HR Development</h1>
             </div>
         </div>
-
-        <!-- Word Bank -->
-        <div class="p-4 bg-indigo-100 rounded-lg">
-             <h3 class="font-bold text-lg text-gray-800 mb-4">Word Bank</h3>
-             <div id="word-bank" class="flex flex-wrap gap-3 justify-center">
-                <!-- Draggable items will be inserted here by JS -->
-             </div>
-        </div>
-        
-        <!-- Action Buttons -->
-        <div class="mt-6 flex justify-center space-x-4">
-            <button id="check-answers-btn" class="px-8 py-3 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 transition">Check Answers</button>
-            <button id="reset-btn" class="px-8 py-3 bg-gray-500 text-white font-semibold rounded-lg shadow-md hover:bg-gray-600 transition">Reset</button>
-        </div>
+        <button class="btn-start mt-10" onclick="startActivities()">Click to Start Activities</button>
     </div>
-    
-    <!-- Modal for feedback -->
-    <div id="feedback-modal" class="modal-backdrop hidden">
-        <div class="modal-content">
-            <h3 id="modal-title" class="text-2xl font-bold mb-4"></h3>
-            <p id="modal-message" class="text-gray-700 mb-6"></p>
-            <button id="modal-close-btn" class="px-8 py-2 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 transition">Close</button>
-        </div>
-    </div>
+
+    <!-- Navigation for activities -->
+    <nav id="activity-nav" class="container mx-auto mt-12 mb-8 p-4 justify-center flex-wrap gap-2 md:gap-4 bg-white/50 backdrop-blur-sm rounded-xl shadow-md w-max hidden">
+        <a id="nav-0" class="nav-link active" onclick="showActivity(0)">1. HR Practices</a>
+        <a id="nav-1" class="nav-link" onclick="showActivity(1)">2. Staff Problems</a>
+        <a id="nav-2" class="nav-link" onclick="showActivity(2)">3. Match Solutions</a>
+        <a id="nav-3" class="nav-link" onclick="showActivity(3)">4. Appraisal Reasons</a>
+        <a id="nav-4" class="nav-link" onclick="showActivity(4)">5. Appraisal Goals</a>
+        <a id="nav-5" class="nav-link" onclick="showActivity(5)">6. Appraisal Report</a>
+        <a id="nav-6" class="nav-link" onclick="showActivity(6)">7. Appraisal Expressions</a>
+        <a id="nav-7" class="nav-link" onclick="showActivity(7)">8. Training Courses</a>
+        <a id="nav-8" class="nav-link" onclick="showActivity(8)">9. Word Partnerships</a>
+        <a id="nav-9" class="nav-link" onclick="showActivity(9)">10. Word Families</a>
+    </nav>
+
+    <main id="main-content" class="container mx-auto px-4 sm:px-6 lg:px-8 hidden">
+
+        <!-- Activity 0: HR Practices Match -->
+        <div id="activity-0" class="activity-card"></div>
+
+        <!-- Activity 1: Staff Problems Fill-in -->
+        <div id="activity-1" class="activity-card hidden"></div>
+
+        <!-- Activity 2: Match Problems to Solutions -->
+        <div id="activity-2" class="activity-card hidden"></div>
+
+        <!-- Activity 3: Appraisal Reasons Match -->
+        <div id="activity-3" class="activity-card hidden"></div>
+
+        <!-- Activity 4: Appraisal Goals Sort -->
+        <div id="activity-4" class="activity-card hidden"></div>
+
+        <!-- Activity 5: Appraisal Report Fill-in -->
+        <div id="activity-5" class="activity-card hidden"></div>
+
+        <!-- Activity 6: Appraisal Expressions Match -->
+        <div id="activity-6" class="activity-card hidden"></div>
+
+        <!-- Activity 7: Training Courses Match -->
+        <div id="activity-7" class="activity-card hidden"></div>
+
+        <!-- Activity 8: Word Partnerships Match -->
+        <div id="activity-8" class="activity-card hidden"></div>
+
+        <!-- Activity 9: Word Families Fill-in -->
+        <div id="activity-9" class="activity-card hidden"></div>
+
+    </main>
+
+    <footer class="text-center py-8 mt-12 text-gray-500">
+        <p>Inspired by the "English Unpacked" series.</p>
+    </footer>
 
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
+        let currentActivityIndex = 0;
 
-            // --- Modal Logic ---
-            const feedbackModal = document.getElementById('feedback-modal');
-            const modalTitle = document.getElementById('modal-title');
-            const modalMessage = document.getElementById('modal-message');
-            const modalCloseBtn = document.getElementById('modal-close-btn');
-
-            function showModal(title, message) {
-                modalTitle.textContent = title;
-                modalMessage.innerHTML = message;
-                feedbackModal.classList.remove('hidden');
+        // --- Activity Data ---
+        const activityData = {
+            0: {
+                title: "Activity 1: HR Practices Match",
+                instruction: "Match the HR staff development practices with their definitions.",
+                type: "match",
+                data: [
+                    { id: 1, p: 'flexible working practices', d: 'to adapt the way of working (flexitime, teleworking, etc.) to suit the diverse needs of employees\' lives' },
+                    { id: 2, p: 'secondment', d: 'the temporary transfer of an employee to another organization or part of the company' },
+                    { id: 3, p: 'long-term individual development', d: 'continually updating and promoting the professional development of employees' },
+                    { id: 4, p: 'appraisal', d: 'regular evaluation of an employee\'s performance, development requirements, and potential' },
+                    { id: 5, p: 'equal opportunity policies', d: 'to maintain fair working practices and equal treatment for each employee' },
+                    { id: 6, p: 'team development', d: 'to motivate a group of employees to work together effectively' },
+                    { id: 7, p: 'mentoring', d: 'to provide an employee with an experienced person who can assist with professional development and offer support and advice' },
+                    { id: 8, p: 'induction programme', d: 'to inform new staff about the company and its procedures and to help them to settle successfully into their new job' }
+                ]
+            },
+            1: {
+                title: "Activity 2: Staff Problems",
+                instruction: "Fill in the missing words from the staff problems described below. Note: Audio is not available for this exercise.",
+                type: "fill",
+                data: [
+                    { sentence: "Gerry, the shop floor ______, is always correcting me...", answer: "supervisor" },
+                    { sentence: "I don't feel in control of the ______.", answer: "situation" },
+                    { sentence: "Listen, I'm having ______ with a major project.", answer: "problems" },
+                    { sentence: "The problem is that nobody ______ the meetings and progress is slow.", answer: "attends" },
+                    { sentence: "He's making a lot of mistakes and is argumentative with ______.", answer: "colleagues" },
+                    { sentence: "Several clients have also recently ______ about his attitude.", answer: "complained" },
+                    { sentence: "I desperately need some training on the latest ______ and accounting procedures in my field.", answer: "software" },
+                    { sentence: "My boss tells me we're too busy for training ______, but it's essential that I'm totally up to date.", answer: "at present" }
+                ]
+            },
+            2: {
+                title: "Activity 3: Match Problems to Solutions",
+                instruction: "Match the staff problem with the most appropriate solution.",
+                type: "match",
+                data: [
+                    { id: 'd', p: 'Natasha: "I only started four months ago but I\'m already thinking about leaving..."', d: 'Solution: Introduce an induction programme to inform and empower new employees. Maybe look into a mentoring scheme too.' },
+                    { id: 'a', p: 'Miguel: "I have put together a team of marketing staff from all our different branches... nobody attends the meetings..."', d: 'Solution: Introduce team development training for managers and staff generally.' },
+                    { id: 'c', p: 'Janet: "I need help with a problem employee. He\'s making a lot of mistakes and is argumentative..."', d: 'Solution: Introduce a staff appraisal scheme to focus managers\' minds on the development and evaluation of their employees.' },
+                    { id: 'b', p: 'Holger: "I\'ve been here seven years and I desperately need some training..."', d: 'Solution: Enable employees to broaden their professional skills and keep up to date. Invest in their future.' }
+                ]
+            },
+            3: {
+                title: "Activity 4: Appraisal Reasons",
+                instruction: "Match the correct heading with the reason for introducing appraisal schemes.",
+                type: "match",
+                data: [
+                    { id: 'c', p: 'Improving performance', d: 'To give feedback on what employees are achieving already and enable them to do their job better.' },
+                    { id: 'a', p: 'Succession planning', d: 'To enable companies to identify potential for future promotion and focus on certain individuals.' },
+                    { id: 'd', p: 'Encouraging better communication', d: 'To promote better contact between managers and their staff.' },
+                    { id: 'b', p: 'Motivating staff', d: 'Open feedback and setting targets for the future, generally encourages staff.' }
+                ]
+            },
+            4: {
+                title: "Activity 5: Appraisal Goals",
+                instruction: "Drag and drop the problems and solutions under the appropriate appraisal goal. Note: Audio is not available for this exercise.",
+                type: "sort",
+                categories: [
+                    { id: 'motivating-staff', name: 'Motivating staff' },
+                    { id: 'improving-performance', name: 'Improving performance' },
+                    { id: 'encouraging-better-communication', name: 'Encouraging better communication' }
+                ],
+                items: [
+                    { text: 'Peter needs to delegate more', category: 'improving-performance' },
+                    { text: 'arrange a meeting with the team', category: 'encouraging-better-communication' },
+                    { text: 'Peter and Gaby need to improve communication', category: 'encouraging-better-communication' },
+                    { text: '25% down for six months', category: 'improving-performance' },
+                    { text: 'get your team\'s output up to scratch', category: 'improving-performance' },
+                    { text: 'meet weekly for a while', category: 'encouraging-better-communication' },
+                    { text: 'Peter to have leadership training', category: 'motivating-staff' },
+                    { text: 'Antonio to have cultural training', category: 'motivating-staff' },
+                    { text: 'Gaby is always busy', category: 'encouraging-better-communication' }
+                ]
+            },
+            5: {
+                title: "Activity 6: Appraisal Report",
+                instruction: "Complete the appraisal report using the words from the box. Note: Audio is not available for this exercise.",
+                type: "fill",
+                wordBank: ['communicate', 'production director', 'cultural', 'decrease', 'delegate', 'overtime', 'relationships', 'leadership', 'long-term sickness', 'training manager'],
+                data: [
+                    { before: "Attention to detail, excellent. Accuracy, good. Peter feels he doesn't have any problems with staff ", answer: "relationships" },
+                    { before: "Peter doesn't always ______ to team members and this causes overwork for himself and thus a ______ in output.", answer: "delegate", then: " and thus a ", answer2: "decrease" },
+                    { before: "Communication ______ need attention.", answer: "skills" },
+                    { before: "Decrease in output caused by Antonio's ______, inability of other team members to work ______.", answer: "long-term sickness", then: ", inability of other team members to work ", answer2: "overtime" },
+                    { before: "Peter didn't feel able to ______ with me. Antonio needs ______ training.", answer: "communicate", then: ". Antonio needs ", answer2: "cultural" },
+                    { before: "Speak to ______ about temporary transfer of staff. ______ skills and time management training for Peter.", answer: "production director", then: ". ", answer2: "Leadership"},
+                    { before: "Talk to ______ about cultural training for all of Peter's team.", answer: "training manager"}
+                ]
+            },
+            6: {
+                title: "Activity 7: Appraisal Expressions",
+                instruction: "Match these expressions from appraisal interviews with their definitions.",
+                type: "match",
+                data: [
+                    { id: 1, p: 'to pay attention to detail', d: 'to notice and deal with small individual facts' },
+                    { id: 2, p: 'to get a little behind', d: 'to be slower than expected' },
+                    { id: 3, p: 'to be on target', d: 'to be at the exact level predicted' },
+                    { id: 4, p: 'to raise an issue', d: 'to mention sth for people to discuss' },
+                    { id: 5, p: 'to get sth up to scratch', d: 'to make sth as good as it can be' },
+                    { id: 6, p: 'to settle in', d: 'to feel happy in a new environment' }
+                ]
+            },
+            7: {
+                title: "Activity 8: Training Courses",
+                instruction: "Match the training course titles to their descriptions.",
+                type: "match",
+                data: [
+                    { id: 1, p: 'Leadership and team building', d: 'Being a competent leader means being able to motivate and get things done. The course includes decision-making, diplomacy, and being sensitive to the needs of others.' },
+                    { id: 2, p: 'Managing your time', d: 'Learn how to set priorities, control your workload, and complete tasks on time.' },
+                    { id: 3, p: 'Assertive leadership skills', d: 'Successful leaders know how to handle people effectively and get results, deal with conflicts and communicate confidently, and earn the respect of their peer group and their superiors.' },
+                    { id: 4, p: 'Balancing priorities and managing projects', d: 'Prioritize and keep on top of multiple projects, manage conflicting demands, and take control over your workload. Set deadlines and stick to them.' }
+                ]
+            },
+            8: {
+                title: "Activity 9: Word Partnerships",
+                instruction: "Match words from both columns to form word partnerships.",
+                type: "match",
+                data: [
+                    { id: 1, p: 'competent', d: 'leader' },
+                    { id: 2, p: 'peer', d: 'group' },
+                    { id: 3, p: 'to take', d: 'control' },
+                    { id: 4, p: 'to get', d: 'results' },
+                    { id: 5, p: 'to set', d: 'priorities' },
+                    { id: 6, p: 'to complete', d: 'tasks' },
+                    { id: 7, p: 'to fulfil', d: 'targets' },
+                    { id: 8, p: 'to handle', d: 'people' }
+                ]
+            },
+            9: {
+                title: "Activity 10: Word Families",
+                instruction: "Complete the sentences with words related to the key words in bold.",
+                type: "fill",
+                data: [
+                    { sentence: "<b>Equal</b> ______ pay for men and women is still a big issue in some sectors of business.", answer: "equality" },
+                    { sentence: "All personnel are subject to the same rules, so everybody is dealt with ______.", answer: "equally" },
+                    { sentence: "The Race Relations Act is about doing away with ______ and discrimination.", answer: "inequality" },
+                    { sentence: "If we introduce an <b>appraise</b> ______ scheme, we must offer training on interviewing techniques.", answer: "appraisal" },
+                    { sentence: "The people doing the interviews are the ______ and the people being assessed are the ______.", answer: "appraisers", then: " and the people being assessed are the ", answer2: "appraisees" }
+                ]
             }
+        };
 
-            modalCloseBtn.addEventListener('click', () => feedbackModal.classList.add('hidden'));
-            feedbackModal.addEventListener('click', (e) => {
-                if (e.target === feedbackModal) {
-                    feedbackModal.classList.add('hidden');
-                }
+        // --- Core Functions ---
+        function showActivity(newIndex) {
+            document.querySelectorAll('.activity-card').forEach(card => card.innerHTML = '');
+            document.querySelectorAll('.activity-card').forEach(card => card.classList.add('hidden'));
+            
+            const card = document.getElementById(`activity-${newIndex}`);
+            card.classList.remove('hidden');
+
+            const activity = activityData[newIndex];
+            if (activity.type === 'match') buildMatchingActivity(card, activity);
+            if (activity.type === 'fill') buildFillInActivity(card, activity);
+            if (activity.type === 'sort') buildSortActivity(card, activity);
+            
+            document.querySelectorAll('.nav-link').forEach(link => link.classList.remove('active'));
+            document.getElementById(`nav-${newIndex}`).classList.add('active');
+            currentActivityIndex = newIndex;
+        }
+
+        function startActivities() {
+            document.getElementById('activity-home').classList.add('hidden');
+            document.getElementById('activity-nav').classList.remove('hidden');
+            document.getElementById('activity-nav').classList.add('flex');
+            document.getElementById('main-content').classList.remove('hidden');
+            showActivity(0);
+        }
+        
+        function shuffle(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+        
+        // --- Activity Builders ---
+        function buildMatchingActivity(card, activity) {
+            card.innerHTML = `
+                <h2 class="text-2xl font-bold mb-4 text-gray-700">${activity.title}</h2>
+                <p class="mb-6 text-gray-600">${activity.instruction}</p>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="phrases-container space-y-3"></div>
+                    <div class="definitions-container space-y-3"></div>
+                </div>
+                <div class="matching-feedback feedback mt-6 text-center"></div>
+                <div class="text-center mt-6">
+                    <button class="btn-primary" onclick="showActivity(${currentActivityIndex})">Reset Game</button>
+                </div>
+            `;
+
+            let selectedPhrase = null, selectedDefinition = null, correctMatches = 0;
+            const phrasesContainer = card.querySelector('.phrases-container');
+            const definitionsContainer = card.querySelector('.definitions-container');
+            const feedbackEl = card.querySelector('.matching-feedback');
+
+            const phrases = shuffle(activity.data.map(item => ({ id: item.id, text: item.p })));
+            const definitions = shuffle(activity.data.map(item => ({ id: item.id, text: item.d })));
+
+            phrases.forEach(item => {
+                const el = document.createElement('div');
+                el.id = `phrase-${item.id}`;
+                el.className = 'matching-item p-3 bg-gray-100 rounded-lg';
+                el.innerHTML = item.text;
+                el.onclick = () => selectPhrase(item.id);
+                phrasesContainer.appendChild(el);
             });
 
-            // --- Sorting Game Logic ---
-            const sortingGame = {
-                data: [
-                    { text: 'Peter needs to delegate more', category: 'Motivating staff' },
-                    { text: 'Antonio to have cultural training', category: 'Motivating staff' },
-                    { text: 'Peter to have leadership training', category: 'Motivating staff' },
-                    { text: '25% down for six months', category: 'Improving performance' },
-                    { text: 'arrange a meeting with the team', category: 'Improving performance' },
-                    { text: 'get your team\'s output up to scratch', category: 'Improving performance' },
-                    { text: 'Peter and Gaby need to improve communication', category: 'Encouraging better communication' },
-                    { text: 'Gaby is always busy', category: 'Encouraging better communication' },
-                    { text: 'meet weekly for a while', category: 'Encouraging better communication' }
-                ],
-                draggedItem: null,
-
-                init() {
-                    this.wordBank = document.getElementById('word-bank');
-                    this.dropZones = document.querySelectorAll('.drop-zone');
-                    this.checkBtn = document.getElementById('check-answers-btn');
-                    this.resetBtn = document.getElementById('reset-btn');
-                    
-                    this.render();
-                    this.addEventListeners();
-                },
-
-                render() {
-                    this.wordBank.innerHTML = '';
-                    this.dropZones.forEach(zone => zone.querySelector('div').innerHTML = '');
-                    this.clearFeedback();
-
-                    // Shuffle the data for variety
-                    const shuffledData = [...this.data].sort(() => Math.random() - 0.5);
-
-                    shuffledData.forEach(item => {
-                        const el = document.createElement('div');
-                        el.className = 'draggable bg-white p-2 rounded-md shadow-sm border cursor-grab';
-                        el.textContent = item.text;
-                        el.draggable = true;
-                        el.dataset.category = item.category;
-                        this.wordBank.appendChild(el);
-                    });
-                },
-                
-                addEventListeners() {
-                    document.addEventListener('dragstart', e => {
-                        if (e.target.classList.contains('draggable')) {
-                            this.draggedItem = e.target;
-                            setTimeout(() => e.target.classList.add('dragging'), 0);
-                        }
-                    });
-
-                    document.addEventListener('dragend', e => {
-                        if (this.draggedItem) {
-                            this.draggedItem.classList.remove('dragging');
-                            this.draggedItem = null;
-                        }
-                    });
-
-                    this.dropZones.forEach(zone => {
-                        zone.addEventListener('dragover', e => {
-                            e.preventDefault();
-                            zone.classList.add('drag-over');
-                        });
-                        zone.addEventListener('dragleave', () => {
-                            zone.classList.remove('drag-over');
-                        });
-                        zone.addEventListener('drop', e => {
-                            e.preventDefault();
-                            zone.classList.remove('drag-over');
-                            if (this.draggedItem) {
-                                zone.querySelector('div').appendChild(this.draggedItem);
-                                this.draggedItem.classList.remove('incorrect', 'correct');
-                            }
-                        });
-                    });
-                    
-                    this.wordBank.addEventListener('drop', e => {
-                         if (this.draggedItem) {
-                            this.wordBank.appendChild(this.draggedItem);
-                            this.draggedItem.classList.remove('incorrect', 'correct');
-                         }
-                    });
-                    
-                    this.checkBtn.addEventListener('click', () => this.checkAnswers());
-                    this.resetBtn.addEventListener('click', () => this.render());
-                },
-
-                checkAnswers() {
-                    this.clearFeedback();
-                    let correctCount = 0;
-                    let totalPlaced = 0;
-
-                    this.dropZones.forEach(zone => {
-                        const zoneCategory = zone.dataset.category;
-                        const items = zone.querySelectorAll('.draggable');
-                        
-                        items.forEach(item => {
-                            totalPlaced++;
-                            if (item.dataset.category === zoneCategory) {
-                                item.classList.add('correct');
-                                correctCount++;
-                            } else {
-                                item.classList.add('incorrect');
-                            }
-                        });
-                    });
-                    
-                    if (totalPlaced === 0) {
-                        showModal('No Items Placed', 'Please drag some items into the categories before checking.');
-                        return;
-                    }
-                    
-                    const totalItems = this.data.length;
-                    const itemsInWordBank = this.wordBank.children.length;
-
-                    let message = `You correctly placed ${correctCount} out of ${totalPlaced} items.`;
-                    if (itemsInWordBank > 0) {
-                        message += `<br>There are still ${itemsInWordBank} items left in the word bank.`
-                    } else if (correctCount === totalItems) {
-                         message = `Excellent! You correctly placed all ${totalItems} items.`
-                    }
-
-
-                    showModal('Results', message);
-                },
-
-                clearFeedback() {
-                    document.querySelectorAll('.draggable').forEach(item => {
-                        item.classList.remove('correct', 'incorrect');
-                    });
-                }
-            };
+            definitions.forEach(item => {
+                const el = document.createElement('div');
+                el.id = `definition-${item.id}`;
+                el.className = 'matching-item p-3 bg-purple-50 rounded-lg';
+                el.innerHTML = item.text;
+                el.onclick = () => selectDefinition(item.id);
+                definitionsContainer.appendChild(el);
+            });
             
-            sortingGame.init();
-        });
+            updateFeedback();
+
+            function selectPhrase(id) {
+                if (card.querySelector(`#phrase-${id}`).classList.contains('correct')) return;
+                selectedPhrase = id;
+                card.querySelectorAll('.phrases-container .matching-item').forEach(el => el.classList.remove('selected'));
+                card.querySelector(`#phrase-${id}`).classList.add('selected');
+                checkMatch();
+            }
+
+            function selectDefinition(id) {
+                if (card.querySelector(`#definition-${id}`).classList.contains('correct')) return;
+                selectedDefinition = id;
+                card.querySelectorAll('.definitions-container .matching-item').forEach(el => el.classList.remove('selected'));
+                card.querySelector(`#definition-${id}`).classList.add('selected');
+                checkMatch();
+            }
+
+            function updateFeedback() {
+                feedbackEl.textContent = `Correct Matches: ${correctMatches} / ${activity.data.length}`;
+                if (correctMatches === activity.data.length) {
+                    feedbackEl.textContent = "Congratulations! You've matched them all!";
+                    feedbackEl.classList.add('correct');
+                } else {
+                    feedbackEl.classList.remove('correct');
+                }
+            }
+
+            function checkMatch() {
+                if (selectedPhrase !== null && selectedDefinition !== null) {
+                    const phraseEl = card.querySelector(`#phrase-${selectedPhrase}`);
+                    const definitionEl = card.querySelector(`#definition-${selectedDefinition}`);
+                    if (selectedPhrase === selectedDefinition) {
+                        [phraseEl, definitionEl].forEach(el => {
+                            el.classList.remove('selected');
+                            el.classList.add('correct');
+                            el.onclick = null;
+                        });
+                        correctMatches++;
+                        updateFeedback();
+                    } else {
+                        [phraseEl, definitionEl].forEach(el => el.classList.add('incorrect'));
+                        setTimeout(() => {
+                            [phraseEl, definitionEl].forEach(el => el.classList.remove('incorrect', 'selected'));
+                        }, 1000);
+                    }
+                    selectedPhrase = null;
+                    selectedDefinition = null;
+                }
+            }
+        }
+
+        function buildFillInActivity(card, activity) {
+            let wordBankHtml = activity.wordBank ? `<div class="text-center mb-6 p-4 bg-purple-50 rounded-lg border border-purple-200"><p class="font-semibold text-purple-800">${activity.wordBank.join(' | ')}</p></div>` : '';
+            card.innerHTML = `
+                <h2 class="text-2xl font-bold mb-4 text-gray-700">${activity.title}</h2>
+                <p class="mb-6 text-gray-600">${activity.instruction}</p>
+                ${wordBankHtml}
+                <div class="fill-in-container space-y-4 text-lg"></div>
+                <div class="text-center mt-8">
+                    <button class="btn-primary" onclick="checkFillIn(${currentActivityIndex})">Check Answers</button>
+                </div>
+            `;
+            
+            const container = card.querySelector('.fill-in-container');
+            activity.data.forEach((item, index) => {
+                let sentenceHtml = item.sentence || `${item.before} ______ ${item.then || ''} ${item.answer2 ? '______' : ''}`;
+                sentenceHtml = sentenceHtml.replace(/______/g, (match, offset) => `<input type="text" id="fill-gap-${index}-${offset}" class="fill-gap mx-2 align-middle">`);
+                container.innerHTML += `<div class="p-3 bg-gray-50 rounded-lg"><p>${index + 1}. ${sentenceHtml}</p></div>`;
+            });
+        }
+        
+        function checkFillIn(index) {
+            const activity = activityData[index];
+            let gapIndex = 0;
+            activity.data.forEach((item, itemIndex) => {
+                const answers = [item.answer, item.answer2].filter(Boolean);
+                answers.forEach((answer, answerIndex) => {
+                    const inputEl = document.querySelector(`#fill-gap-${itemIndex}-${(sentence.indexOf('______') + 1) * answerIndex}`);
+                     if (inputEl) {
+                        if (inputEl.value.trim().toLowerCase() === answer.toLowerCase()) {
+                            inputEl.style.borderColor = '#22c55e';
+                            inputEl.style.backgroundColor = '#dcfce7';
+                        } else {
+                            inputEl.style.borderColor = '#ef4444';
+                            inputEl.style.backgroundColor = '#fee2e2';
+                        }
+                    }
+                });
+            });
+        }
+        
+        function buildSortActivity(card, activity) {
+            let categoriesHtml = activity.categories.map(cat => `
+                <div>
+                    <h3 class="font-bold text-lg mb-2 text-center">${cat.name}</h3>
+                    <div class="drop-zone min-h-[200px]" data-category="${cat.id}"></div>
+                </div>
+            `).join('');
+
+            card.innerHTML = `
+                <h2 class="text-2xl font-bold mb-4 text-gray-700">${activity.title}</h2>
+                <p class="mb-6 text-gray-600">${activity.instruction}</p>
+                <div class="flex flex-col gap-8">
+                    <div class="w-full grid grid-cols-1 md:grid-cols-${activity.categories.length} gap-4">${categoriesHtml}</div>
+                    <div class="w-full p-4 bg-gray-100 rounded-lg">
+                        <h3 class="font-bold text-lg mb-2 text-center">Items to Sort</h3>
+                        <div class="sort-items-pool grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2"></div>
+                    </div>
+                </div>
+                <div class="text-center mt-8">
+                    <button class="btn-primary" onclick="checkSort(${currentActivityIndex})">Check Answers</button>
+                    <button class="btn-primary" style="background: #6b7280" onclick="showActivity(${currentActivityIndex})">Reset</button>
+                </div>
+            `;
+            
+            const pool = card.querySelector('.sort-items-pool');
+            const shuffledItems = shuffle([...activity.items]);
+            shuffledItems.forEach((item, index) => {
+                const el = document.createElement('div');
+                el.id = `sortable-${index}`;
+                el.className = 'sortable-item p-3 bg-indigo-100 border-indigo-200';
+                el.textContent = item.text;
+                el.draggable = true;
+                el.dataset.category = item.category;
+                el.addEventListener('dragstart', e => e.dataTransfer.setData('text/plain', e.target.id));
+                pool.appendChild(el);
+            });
+
+            card.querySelectorAll('.drop-zone, .sort-items-pool').forEach(zone => {
+                zone.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('drag-over'); });
+                zone.addEventListener('dragleave', () => zone.classList.remove('drag-over'));
+                zone.addEventListener('drop', e => {
+                    e.preventDefault();
+                    zone.classList.remove('drag-over');
+                    const id = e.dataTransfer.getData('text');
+                    const draggableElement = document.getElementById(id);
+                    zone.appendChild(draggableElement);
+                });
+            });
+        }
+
+        function checkSort(index) {
+            const card = document.getElementById(`activity-${index}`);
+            card.querySelectorAll('.drop-zone').forEach(zone => {
+                zone.querySelectorAll('.sortable-item').forEach(item => {
+                    item.style.backgroundColor = item.dataset.category === zone.dataset.category ? '#dcfce7' : '#fee2e2';
+                });
+            });
+        }
+        
+        window.onload = () => {};
     </script>
 </body>
 </html>
+
